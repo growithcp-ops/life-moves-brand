@@ -16,27 +16,60 @@
   --color-hairline: var(--hairline);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --font-serif: "Cormorant Garamond", "Times New Roman", serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-sand: var(--sand);
+  --color-moss: var(--moss);
+  --color-terracotta: var(--terracotta);
+  --color-cream: var(--cream);
+  --color-amber-gold: var(--amber-gold);
+  --font-serif: "EB Garamond", serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --forest: oklch(0.42 0.06 155);
-  --charcoal: oklch(0.21 0.005 240);
-  --offwhite: oklch(0.965 0.012 80);
-  --parchment: oklch(0.92 0.018 80);
-  --clay: oklch(0.66 0.11 45);
-  --clay-soft: oklch(0.78 0.07 50);
-  --hairline: oklch(0.21 0.005 240 / 0.18);
+  --forest: oklch(0.24 0.04 150); /* Richer, deeper luxury forest moss */
+  --charcoal: oklch(0.12 0.008 240); /* Near-black obsidian */
+  --offwhite: oklch(0.98 0.008 85); /* Rich, luxurious warm ivory */
+  --parchment: oklch(0.95 0.015 85); /* Warm paper texture */
+  --clay: oklch(0.56 0.12 45); /* Raw Sienna terracotta */
+  --clay-soft: oklch(0.72 0.08 52); /* Soft clay rose */
+  --hairline: oklch(0.12 0.008 240 / 0.11); /* Ultra thin dividers */
   --background: var(--offwhite);
   --foreground: var(--charcoal);
-  --muted: oklch(0.9 0.015 80);
-  --muted-foreground: oklch(0.45 0.01 240);
+  --muted: oklch(0.93 0.01 85);
+  --muted-foreground: oklch(0.42 0.01 240);
+  
+  /* Accent Additions */
+  --sand: oklch(0.92 0.018 85);
+  --moss: oklch(0.36 0.05 145);
+  --terracotta: oklch(0.48 0.11 40);
+  --cream: oklch(0.99 0.005 85);
+  --amber-gold: oklch(0.72 0.09 72);
 }
 
 @layer base {
   * { border-color: var(--hairline); }
-  html { scroll-behavior: smooth; }
+  html { 
+    scroll-behavior: smooth; 
+    scrollbar-width: thin;
+    scrollbar-color: var(--clay-soft) var(--offwhite);
+  }
+  
+  /* Custom Scrollbar for Webkit */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--offwhite);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--clay-soft);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--clay);
+  }
+
   body {
     background-color: var(--offwhite);
     color: var(--charcoal);
@@ -53,20 +86,35 @@
   font-family: var(--font-sans);
   font-size: 10.5px;
   font-weight: 500;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
 }
-@utility hairline { height: 1px; background: currentColor; opacity: 0.18; }
+@utility hairline { height: 1px; background: currentColor; opacity: 0.12; }
 @utility grain {
   position: relative;
   &::after {
     content: "";
     position: absolute; inset: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>");
-    opacity: 0.08;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.45 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.75'/></svg>");
+    opacity: 0.05;
     pointer-events: none;
     mix-blend-mode: overlay;
+    z-index: 1;
   }
+}
+
+@utility glass {
+  background: rgba(247, 244, 239, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(18, 18, 18, 0.05);
+}
+
+@utility glass-dark {
+  background: rgba(18, 18, 18, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(247, 244, 239, 0.08);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -75,3 +123,4 @@
     transition-duration: 0.001ms !important;
   }
 }
+

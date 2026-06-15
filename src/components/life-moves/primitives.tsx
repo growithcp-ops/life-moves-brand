@@ -17,12 +17,12 @@ export function Reveal({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-10% 0px -10% 0px" });
+  const inView = useInView(ref, { once: false, amount: 0.15 });
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
       transition={{ duration: 0.9, delay, ease }}
       className={className}
     >
@@ -33,16 +33,16 @@ export function Reveal({
 
 export function StaggerWords({ text, className, italic = false, delay = 0 }: { text: string; className?: string; italic?: boolean; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-20% 0px" });
+  const inView = useInView(ref, { once: false, amount: 0.15 });
   const words = text.split(" ");
   return (
     <div ref={ref} className={className} style={{ fontStyle: italic ? "italic" : undefined }}>
       {words.map((w, i) => (
-        <span key={i} className="inline-block overflow-hidden align-baseline" style={{ marginRight: "0.25em" }}>
+        <span key={i} className="inline-block overflow-hidden align-baseline pb-5 -mb-5" style={{ marginRight: "0.25em" }}>
           <motion.span
-            className="inline-block"
+            className="inline-block pb-1"
             initial={{ y: "110%" }}
-            animate={inView ? { y: "0%" } : {}}
+            animate={inView ? { y: "0%" } : { y: "110%" }}
             transition={{ duration: 1, delay: delay + i * 0.08, ease }}
           >
             {w}
@@ -55,13 +55,13 @@ export function StaggerWords({ text, className, italic = false, delay = 0 }: { t
 
 export function DrawLine({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true });
+  const inView = useInView(ref, { once: false, amount: 0.3 });
   return (
     <div ref={ref} className={"relative overflow-hidden " + className} style={{ height: 1 }}>
       <motion.div
         className="absolute inset-y-0 left-0 bg-current opacity-30"
         initial={{ width: "0%" }}
-        animate={inView ? { width: "100%" } : {}}
+        animate={inView ? { width: "100%" } : { width: "0%" }}
         transition={{ duration: 1.2, ease }}
       />
     </div>
@@ -70,7 +70,7 @@ export function DrawLine({ className = "" }: { className?: string }) {
 
 export function ClipReveal({ src, alt, className, ratio = "aspect-[4/5]" }: { src: string; alt: string; className?: string; ratio?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-10% 0px" });
+  const inView = useInView(ref, { once: false, amount: 0.15 });
   return (
     <div ref={ref} className={`relative overflow-hidden ${ratio} ${className ?? ""}`}>
       <motion.img
@@ -79,13 +79,13 @@ export function ClipReveal({ src, alt, className, ratio = "aspect-[4/5]" }: { sr
         loading="lazy"
         className="absolute inset-0 h-full w-full object-cover"
         initial={{ scale: 1.15 }}
-        animate={inView ? { scale: 1 } : {}}
+        animate={inView ? { scale: 1 } : { scale: 1.15 }}
         transition={{ duration: 1.6, ease }}
       />
       <motion.div
         className="absolute inset-0 bg-charcoal"
         initial={{ clipPath: "inset(0 0 0 0)" }}
-        animate={inView ? { clipPath: "inset(0 0 100% 0)" } : {}}
+        animate={inView ? { clipPath: "inset(0 0 100% 0)" } : { clipPath: "inset(0 0 0 0)" }}
         transition={{ duration: 1.4, ease }}
       />
     </div>
@@ -94,10 +94,13 @@ export function ClipReveal({ src, alt, className, ratio = "aspect-[4/5]" }: { sr
 
 export function Counter({ to, suffix = "", className }: { to: number; suffix?: string; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true });
+  const inView = useInView(ref, { once: false, amount: 0.3 });
   const [val, setVal] = useState(0);
   useEffect(() => {
-    if (!inView) return;
+    if (!inView) {
+      setVal(0);
+      return;
+    }
     const start = performance.now();
     const dur = 1600;
     let raf = 0;
@@ -163,9 +166,9 @@ export function MagneticButton({
   );
 }
 
-export function Parallax({ children, amount = 40 }: { children: ReactNode; amount?: number }) {
+export function Parallax({ children, amount = 40, className = "" }: { children: ReactNode; amount?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [-amount, amount]);
-  return <motion.div ref={ref} style={{ y }}>{children}</motion.div>;
+  return <motion.div ref={ref} style={{ y }} className={className}>{children}</motion.div>;
 }
