@@ -4,11 +4,11 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 export function CustomCursor() {
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
-  
+
   // Outer ring spring (smooth, slight lag)
   const sxOuter = useSpring(x, { stiffness: 180, damping: 25, mass: 0.6 });
   const syOuter = useSpring(y, { stiffness: 180, damping: 25, mass: 0.6 });
-  
+
   // Inner dot spring (tight, fast)
   const sxInner = useSpring(x, { stiffness: 400, damping: 35, mass: 0.2 });
   const syInner = useSpring(y, { stiffness: 400, damping: 35, mass: 0.2 });
@@ -28,11 +28,11 @@ export function CustomCursor() {
       rafRef.current = requestAnimationFrame(() => {
         x.set(e.clientX);
         y.set(e.clientY);
-        
+
         const target = e.target as HTMLElement | null;
         const cursorEl = target?.closest("[data-cursor]") as HTMLElement | null;
         const buttonEl = target?.closest("button, a, input, select") as HTMLElement | null;
-        
+
         setLabel(cursorEl?.dataset.cursor ?? null);
         setIsHovered(!!cursorEl || !!buttonEl);
       });
@@ -40,7 +40,7 @@ export function CustomCursor() {
 
     window.addEventListener("mousemove", move);
     document.documentElement.style.cursor = "none";
-    
+
     return () => {
       window.removeEventListener("mousemove", move);
       document.documentElement.style.cursor = "";
@@ -92,4 +92,3 @@ export function CustomCursor() {
     </>
   );
 }
-

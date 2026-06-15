@@ -37,7 +37,7 @@
   --foreground: var(--charcoal);
   --muted: oklch(0.93 0.01 85);
   --muted-foreground: oklch(0.42 0.01 240);
-  
+
   /* Accent Additions */
   --sand: oklch(0.92 0.018 85);
   --moss: oklch(0.36 0.05 145);
@@ -47,13 +47,15 @@
 }
 
 @layer base {
-  * { border-color: var(--hairline); }
-  html { 
-    scroll-behavior: smooth; 
+  * {
+    border-color: var(--hairline);
+  }
+  html {
+    scroll-behavior: smooth;
     scrollbar-width: thin;
     scrollbar-color: var(--clay-soft) var(--offwhite);
   }
-  
+
   /* Custom Scrollbar for Webkit */
   ::-webkit-scrollbar {
     width: 6px;
@@ -78,10 +80,16 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  ::selection { background: var(--clay); color: var(--offwhite); }
+  ::selection {
+    background: var(--clay);
+    color: var(--offwhite);
+  }
 }
 
-@utility font-serif { font-family: var(--font-serif); font-weight: 300; }
+@utility font-serif {
+  font-family: var(--font-serif);
+  font-weight: 300;
+}
 @utility eyebrow {
   font-family: var(--font-sans);
   font-size: 10.5px;
@@ -89,12 +97,17 @@
   letter-spacing: 0.24em;
   text-transform: uppercase;
 }
-@utility hairline { height: 1px; background: currentColor; opacity: 0.12; }
+@utility hairline {
+  height: 1px;
+  background: currentColor;
+  opacity: 0.12;
+}
 @utility grain {
   position: relative;
   &::after {
     content: "";
-    position: absolute; inset: 0;
+    position: absolute;
+    inset: 0;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.45 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.75'/></svg>");
     opacity: 0.05;
     pointer-events: none;
@@ -117,10 +130,59 @@
   border: 1px solid rgba(247, 244, 239, 0.08);
 }
 
+@utility rounded-wavy {
+  border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+}
+
+@utility rounded-wavy-alt {
+  border-radius: 40% 60% 30% 70% / 60% 45% 55% 40%;
+}
+
+@utility shadow-luxury {
+  box-shadow:
+    0 20px 50px -12px rgba(18, 18, 18, 0.04),
+    0 1px 2px rgba(18, 18, 18, 0.02);
+}
+
+@utility shadow-capsule {
+  box-shadow:
+    0 12px 30px -8px rgba(18, 18, 18, 0.05),
+    0 1px 2px rgba(18, 18, 18, 0.01);
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.06) rotate(3deg);
+  }
+}
+
+@keyframes float-reverse {
+  0%,
+  100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translateY(20px) scale(0.95) rotate(-3deg);
+  }
+}
+
+@utility animate-float {
+  animation: float-slow 15s ease-in-out infinite;
+}
+
+@utility animate-float-reverse {
+  animation: float-reverse 18s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
 }
-

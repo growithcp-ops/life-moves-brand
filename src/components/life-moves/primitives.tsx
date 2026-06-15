@@ -1,4 +1,11 @@
-import { motion, useInView, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useScroll,
+} from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode, type ButtonHTMLAttributes } from "react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -31,14 +38,28 @@ export function Reveal({
   );
 }
 
-export function StaggerWords({ text, className, italic = false, delay = 0 }: { text: string; className?: string; italic?: boolean; delay?: number }) {
+export function StaggerWords({
+  text,
+  className,
+  italic = false,
+  delay = 0,
+}: {
+  text: string;
+  className?: string;
+  italic?: boolean;
+  delay?: number;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: false, amount: 0.15 });
   const words = text.split(" ");
   return (
     <div ref={ref} className={className} style={{ fontStyle: italic ? "italic" : undefined }}>
       {words.map((w, i) => (
-        <span key={i} className="inline-block overflow-hidden align-baseline pb-5 -mb-5" style={{ marginRight: "0.25em" }}>
+        <span
+          key={i}
+          className="inline-block overflow-hidden align-baseline pb-5 -mb-5"
+          style={{ marginRight: "0.25em" }}
+        >
           <motion.span
             className="inline-block pb-1"
             initial={{ y: "110%" }}
@@ -68,7 +89,17 @@ export function DrawLine({ className = "" }: { className?: string }) {
   );
 }
 
-export function ClipReveal({ src, alt, className, ratio = "aspect-[4/5]" }: { src: string; alt: string; className?: string; ratio?: string }) {
+export function ClipReveal({
+  src,
+  alt,
+  className,
+  ratio = "aspect-[4/5]",
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  ratio?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: false, amount: 0.15 });
   return (
@@ -92,7 +123,15 @@ export function ClipReveal({ src, alt, className, ratio = "aspect-[4/5]" }: { sr
   );
 }
 
-export function Counter({ to, suffix = "", className }: { to: number; suffix?: string; className?: string }) {
+export function Counter({
+  to,
+  suffix = "",
+  className,
+}: {
+  to: number;
+  suffix?: string;
+  className?: string;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: false, amount: 0.3 });
   const [val, setVal] = useState(0);
@@ -113,7 +152,12 @@ export function Counter({ to, suffix = "", className }: { to: number; suffix?: s
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [inView, to]);
-  return <span ref={ref} className={className}>{val}{suffix}</span>;
+  return (
+    <span ref={ref} className={className}>
+      {val}
+      {suffix}
+    </span>
+  );
 }
 
 export function MagneticButton({
@@ -137,7 +181,10 @@ export function MagneticButton({
     x.set(Math.max(-10, Math.min(10, mx * 0.3)));
     y.set(Math.max(-10, Math.min(10, my * 0.3)));
   };
-  const onLeave = () => { x.set(0); y.set(0); };
+  const onLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
 
   const base =
     "group inline-flex items-center gap-3 px-7 py-4 text-[11px] font-medium tracking-[0.22em] uppercase transition-colors duration-500 will-change-transform";
@@ -159,16 +206,34 @@ export function MagneticButton({
       {...(props as any)}
     >
       <span>{children}</span>
-      <svg width="22" height="6" viewBox="0 0 22 6" fill="none" className="transition-transform duration-500 group-hover:translate-x-1">
+      <svg
+        width="22"
+        height="6"
+        viewBox="0 0 22 6"
+        fill="none"
+        className="transition-transform duration-500 group-hover:translate-x-1"
+      >
         <path d="M0 3H21M21 3L18 1M21 3L18 5" stroke="currentColor" strokeWidth="0.8" />
       </svg>
     </motion.button>
   );
 }
 
-export function Parallax({ children, amount = 40, className = "" }: { children: ReactNode; amount?: number; className?: string }) {
+export function Parallax({
+  children,
+  amount = 40,
+  className = "",
+}: {
+  children: ReactNode;
+  amount?: number;
+  className?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [-amount, amount]);
-  return <motion.div ref={ref} style={{ y }} className={className}>{children}</motion.div>;
+  return (
+    <motion.div ref={ref} style={{ y }} className={className}>
+      {children}
+    </motion.div>
+  );
 }
