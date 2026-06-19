@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   motion,
@@ -28,9 +28,14 @@ import circleImg from "@/assets/gallery-circle.jpg";
 import clayImg from "@/assets/gallery-clay.jpg";
 import forestImg from "@/assets/gallery-forest.jpg";
 import fireImg from "@/assets/gallery-fire.jpg";
-import founderImg from "@/assets/founder.jpg";
+import founderImg from "@/assets/founder-portrait-v2.jpg";
+import founderBgImg from "@/assets/founder-bg-v2.jpg";
 import movementImg from "@/assets/gallery-movement.jpg";
 import logoImg from "@/assets/logo.png";
+import karanImg from "@/assets/karan_portrait.png";
+import meeraImg from "@/assets/meera_portrait.png";
+import priyaImg from "@/assets/priya_portrait.png";
+import rohanImg from "@/assets/rohan_thumbnail.png";
 
 import {
   Reveal,
@@ -191,19 +196,33 @@ function Index() {
   const apply = () => setOpen(true);
 
   return (
-    <div className="min-h-screen bg-offwhite text-charcoal overflow-x-hidden selection:bg-clay selection:text-offwhite">
+    <div className="min-h-screen bg-cream text-charcoal overflow-x-hidden selection:bg-clay selection:text-offwhite font-sans">
       <Nav onApply={apply} />
-      <Hero onApply={apply} />
-      <WhoFor />
-      <WhatThisIs />
-      <BreathingPacer />
-      <SocialProof />
-      <Method />
-      <Gallery />
-      <Founder />
-      <Editions onApply={apply} />
-      <FinalCTA onApply={apply} />
-      <Footer />
+
+      {/* Watermark background */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.04] mix-blend-multiply z-0">
+        <img
+          src="/banyan-tree.png"
+          alt="Banyan tree watermark"
+          className="w-full h-full object-cover object-center"
+        />
+      </div>
+
+      <div className="relative z-10">
+        <Hero onApply={apply} />
+        <WhoFor />
+        <WhatThisIs />
+        <SocialProof />
+        <Method />
+        <Gallery />
+        <Outcome />
+        <Facilitator onApply={apply} />
+        <Editions onApply={apply} />
+        <FinalCTA onApply={apply} />
+        <FAQ />
+        <Footer onApply={apply} />
+      </div>
+
       <ApplicationModal open={open} onClose={() => setOpen(false)} />
       <AmbientAudioController />
     </div>
@@ -211,16 +230,26 @@ function Index() {
 }
 
 /* ───────────── NAV ───────────── */
-function Nav({ onApply }: { onApply: () => void }) {
-  const [solid, setSolid] = useState(false);
+export function Nav({
+  onApply,
+  alwaysSolid = false,
+}: {
+  onApply: () => void;
+  alwaysSolid?: boolean;
+}) {
+  const [solid, setSolid] = useState(alwaysSolid);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
+    if (alwaysSolid) {
+      setSolid(true);
+      return;
+    }
     const onScroll = () => setSolid(window.scrollY > 80);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [alwaysSolid]);
 
   return (
     <>
@@ -235,9 +264,9 @@ function Nav({ onApply }: { onApply: () => void }) {
         }`}
       >
         <div className="mx-auto flex items-center justify-between gap-6 max-w-[1500px]">
-          <a href="#top" className="flex items-center transition hover:opacity-85">
+          <Link to="/" className="flex items-center transition hover:opacity-85">
             <LogoMark className="text-white" />
-          </a>
+          </Link>
 
           <div className="hidden items-center gap-3 lg:flex bg-white/5 px-4 py-1.5 rounded-full border border-white/10">
             <span className="relative flex h-1.5 w-1.5">
@@ -250,20 +279,20 @@ function Nav({ onApply }: { onApply: () => void }) {
           </div>
 
           <nav className="hidden items-center gap-8 md:flex">
-            <a
-              href="#experience"
+            <Link
+              to="/experience"
               className="eyebrow text-[9.5px] opacity-75 transition hover:opacity-100"
             >
               The Experience
-            </a>
+            </Link>
             <a
-              href="#editions"
+              href="/#editions"
               className="eyebrow text-[9.5px] opacity-75 transition hover:opacity-100"
             >
               Upcoming Editions
             </a>
             <a
-              href="#founder"
+              href="/#founder"
               className="eyebrow text-[9.5px] opacity-75 transition hover:opacity-100"
             >
               About Aman
@@ -313,26 +342,46 @@ function Nav({ onApply }: { onApply: () => void }) {
 
             <nav className="mt-20 flex flex-1 flex-col justify-center gap-8">
               {[
-                ["The Experience", "#experience"],
-                ["Upcoming Editions", "#editions"],
-                ["About Aman", "#founder"],
+                ["The Experience", "/experience"],
+                ["Upcoming Editions", "/#editions"],
+                ["About Aman", "/#founder"],
                 ["Apply for Edition", "#apply"],
-              ].map(([l, h], i) => (
-                <motion.a
-                  key={l}
-                  href={h}
-                  onClick={() => {
-                    setMenuOpen(false);
-                    if (l.startsWith("Apply")) onApply();
-                  }}
-                  initial={{ y: 30, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.1 + i * 0.08, ease }}
-                  className="font-serif text-4xl"
-                >
-                  {l}
-                </motion.a>
-              ))}
+              ].map(([l, h], i) => {
+                if (h.startsWith("/")) {
+                  return (
+                    <motion.div
+                      key={l}
+                      initial={{ y: 30, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 0.1 + i * 0.08, ease }}
+                    >
+                      <Link
+                        to={h as any}
+                        onClick={() => setMenuOpen(false)}
+                        className="font-serif text-4xl hover:text-clay transition"
+                      >
+                        {l}
+                      </Link>
+                    </motion.div>
+                  );
+                }
+                return (
+                  <motion.a
+                    key={l}
+                    href={h}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      if (l.startsWith("Apply")) onApply();
+                    }}
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.1 + i * 0.08, ease }}
+                    className="font-serif text-4xl hover:text-clay transition"
+                  >
+                    {l}
+                  </motion.a>
+                );
+              })}
             </nav>
             <p className="eyebrow opacity-50 mt-auto border-t border-offwhite/10 pt-6 text-[9.5px]">
               Life moves. Come move with it.
@@ -419,18 +468,21 @@ function Hero({ onApply }: { onApply: () => void }) {
       ref={ref}
       className="relative h-[100svh] min-h-[720px] w-full overflow-hidden bg-charcoal text-offwhite grain"
     >
-      <motion.div style={{ y: yBg }} className="absolute inset-0 scale-105">
-        <motion.img
-          initial={{ scale: 1.08 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 4, ease }}
-          src={heroImg}
-          alt="Goa coast at dusk"
-          width={1920}
-          height={1080}
-          className="absolute inset-0 h-[115%] w-full object-cover opacity-85"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal/20 via-charcoal/15 to-charcoal/90" />
+      <motion.div style={{ y: yBg }} className="absolute inset-0 scale-105 bg-charcoal">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 h-[115%] w-full object-cover opacity-50 filter brightness-[0.7] saturate-[0.85]"
+          poster={heroImg}
+        >
+          <source
+            src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0227e36913c1ca117bbbc0a147d0d38&profile_id=165&oauth2_token_id=57447761"
+            type="video/mp4"
+          />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal/20 via-charcoal/15 to-charcoal/90 pointer-events-none" />
       </motion.div>
 
       <motion.div
@@ -551,50 +603,58 @@ function WhoFor() {
   return (
     <section
       id="experience"
-      className="scroll-mt-32 bg-offwhite py-32 md:py-48 border-b border-hairline relative overflow-hidden"
+      className="scroll-mt-32 bg-cream text-charcoal py-32 md:py-48 border-b border-charcoal/5 relative overflow-hidden"
     >
+      {/* Background Image with soft elegant overlay */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
+        <img
+          src="/who-this-is-for-bg.png"
+          alt="Who This Is For Background"
+          className="w-full h-full object-cover object-center opacity-35 mix-blend-multiply scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-cream via-cream/10 to-cream z-[1]" />
+      </div>
+
       {/* Floating abstract blobs */}
-      <div className="absolute top-1/4 -left-48 w-[40rem] h-[40rem] bg-clay/5 rounded-full blur-3xl pointer-events-none animate-float" />
-      <div className="absolute bottom-1/4 -right-48 w-[35rem] h-[35rem] bg-moss/5 rounded-full blur-3xl pointer-events-none animate-float-reverse" />
+      <div className="absolute top-1/4 -left-48 w-[40rem] h-[40rem] bg-clay/5 rounded-full blur-3xl pointer-events-none animate-float z-[2]" />
+      <div className="absolute bottom-1/4 -right-48 w-[35rem] h-[35rem] bg-moss/5 rounded-full blur-3xl pointer-events-none animate-float-reverse z-[2]" />
 
       <div className="mx-auto max-w-[1500px] px-6 md:px-12 relative z-10">
         <div className="grid gap-16 md:grid-cols-[1fr_1.3fr] items-start">
           {/* Left Column - Sticky */}
           <div className="md:sticky md:top-32 h-fit space-y-6">
-            <div className="flex items-center gap-2">
-              <span className="eyebrow text-clay">01 / Who This Is For</span>
-            </div>
-            <h2 className="font-serif text-[clamp(2.4rem,5vw,4.5rem)] leading-[1.18] tracking-normal">
-              For those who are <br />
-              <em className="italic text-forest">living well</em> but no longer{" "}
-              <em className="italic text-clay font-normal">feeling</em> it.
+            <span className="eyebrow text-clay tracking-[0.24em] font-semibold text-xs uppercase mb-1 block">
+              This isn't for everyone
+            </span>
+            <h2 className="font-serif text-5xl md:text-8xl font-black text-charcoal tracking-tight leading-[1.05]">
+              Who This Is For.
             </h2>
-            <p className="text-base leading-relaxed text-charcoal/70 max-w-sm font-light">
-              You don't need fixing. You need a few days where the world stops asking anything of
-              you — so you can hear what you've been quietly carrying.
-            </p>
-
-            <div className="hidden md:block pt-8 border-t border-hairline max-w-xs">
-              <span className="text-[9.5px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold">
-                Symptom check · autopilot state
-              </span>
+            <div className="w-20 h-0.5 bg-clay my-6" />
+            <div className="space-y-4 max-w-md">
+              <p className="text-base leading-relaxed text-charcoal/80 font-light">
+                For founders, builders, creatives, and professionals who have built a life that
+                works and still feel something missing.
+              </p>
+              <p className="text-base leading-relaxed text-charcoal/60 font-light">
+                You're not in crisis. You're managing. And managing isn't the same as living.
+              </p>
             </div>
           </div>
 
           {/* Right Column - Scroll list of signs aligned to a clean grid */}
           <div className="space-y-4">
             {signs.map((s, i) => (
-              <Reveal key={i} delay={0.08}>
-                <div className="group relative border border-hairline p-6 md:p-8 transition-all duration-500 hover:bg-parchment/40 bg-white/[0.01] rounded-sm">
+              <Reveal key={i} delay={0.08 * i}>
+                <div className="group relative glass p-6 md:p-8 transition-all duration-500 hover:bg-cream/90 rounded-sm">
                   {/* Subtle hover lines drawing */}
                   <div className="absolute top-0 left-0 w-0 h-px bg-clay transition-all duration-500 group-hover:w-full" />
                   <div className="absolute top-0 left-0 w-px h-0 bg-clay transition-all duration-500 group-hover:h-full" />
 
-                  <div className="grid grid-cols-[3.5rem_1fr] gap-6 items-start">
-                    <span className="eyebrow text-[11px] text-clay/70 tracking-widest font-semibold pt-[3px]">
-                      {s.num}
+                  <div className="grid grid-cols-[2rem_1fr] gap-4 items-start">
+                    <span className="font-light text-2xl text-clay/60 leading-none pt-0.5 font-sans">
+                      —
                     </span>
-                    <p className="font-serif text-xl md:text-2xl leading-normal text-charcoal/90">
+                    <p className="font-serif text-lg md:text-xl leading-normal text-charcoal/85">
                       {s.text}
                     </p>
                   </div>
@@ -674,7 +734,7 @@ function WhatThisIs() {
   ];
 
   return (
-    <section className="relative bg-cream py-24 md:py-36 overflow-hidden">
+    <section className="relative bg-cream py-16 md:py-24 overflow-hidden border-b border-charcoal/5">
       {/* Abstract background flowing curves */}
       <div className="absolute inset-0 pointer-events-none opacity-45">
         <svg
@@ -697,15 +757,34 @@ function WhatThisIs() {
       </div>
 
       <div className="mx-auto max-w-[1300px] px-6 md:px-12 relative z-10">
-        <div className="grid gap-16 md:grid-cols-[1.1fr_1fr] items-center">
-          {/* Left Column: Wavy Decorative circle mask */}
+        <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] items-center">
+          {/* Left Column: Philosophy details */}
+          <div className="space-y-6">
+            <Reveal>
+              <div className="flex items-center gap-2">
+                <span className="eyebrow text-clay">02 / Our Philosophy</span>
+              </div>
+              <h2 className="font-serif text-5xl md:text-7xl font-black text-charcoal tracking-tight leading-[1.05] mt-2">
+                A Living Break. <br />
+                <em className="italic text-forest font-serif font-normal">Not a holiday.</em>
+              </h2>
+              <div className="w-20 h-0.5 bg-clay my-6" />
+              <p className="mt-4 text-base leading-relaxed text-charcoal/70 font-light max-w-xl">
+                A holiday distracts you from your life. A Living Break gives you back to it. We
+                bring together twelve people for five days of deep rest, tactile creativity, and
+                body-led practices in absolute quiet.
+              </p>
+            </Reveal>
+          </div>
+
+          {/* Right Column: Wavy Decorative circle mask (scaled down) */}
           <div className="relative flex justify-center items-center">
             {/* Wavy background decor behind circle */}
             <div className="absolute w-[110%] h-[110%] bg-clay/5 rounded-full blur-2xl -z-10" />
             <div className="absolute w-[95%] h-[95%] bg-[#e9e4d9] rounded-wavy -z-10 animate-[pulse_8s_infinite]" />
             <div className="absolute w-[102%] h-[102%] border border-dashed border-clay/20 rounded-full -z-10 animate-[spin_60s_linear_infinite]" />
 
-            <div className="w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] overflow-hidden rounded-full border-[10px] border-white shadow-2xl relative">
+            <div className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] overflow-hidden rounded-full border-[8px] border-white shadow-2xl relative">
               <img
                 src={forestImg}
                 alt="Forest Path Philosophy"
@@ -715,318 +794,118 @@ function WhatThisIs() {
             </div>
 
             {/* Floating details badge */}
-            <div className="absolute bottom-4 right-4 sm:right-10 bg-white/95 backdrop-blur shadow-lg px-4 py-2.5 rounded-full border border-charcoal/5 flex items-center gap-2 text-[9px] uppercase font-semibold tracking-wider text-charcoal">
-              <span className="h-2 w-2 rounded-full bg-clay animate-ping" />
+            <div className="absolute bottom-3 right-3 sm:right-8 bg-white/95 backdrop-blur shadow-md px-3.5 py-1.5 rounded-full border border-charcoal/5 flex items-center gap-1.5 text-[8px] uppercase font-semibold tracking-wider text-charcoal">
+              <span className="h-1.5 w-1.5 rounded-full bg-clay animate-ping" />
               <span>Somatic Focus</span>
             </div>
           </div>
+        </div>
 
-          {/* Right Column: Philosophy details */}
-          <div className="space-y-8">
-            <Reveal>
-              <div className="flex items-center gap-2">
-                <span className="eyebrow text-clay">02 / Our Philosophy</span>
+        {/* Bottom Row: List of practices pills in a horizontal 3-column grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10 border-t border-charcoal/5 mt-12">
+          {items.map((item, idx) => (
+            <Reveal key={idx} delay={idx * 0.15}>
+              <div className="group flex items-start gap-4 bg-white border border-charcoal/10 hover:border-clay/20 p-5 rounded-sm shadow-sm hover:shadow-luxury transition-all duration-500 hover:-translate-y-0.5 h-full">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-clay/5 flex items-center justify-center group-hover:bg-clay group-hover:text-white transition-all duration-500">
+                  {item.icon}
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-sans text-xs font-semibold tracking-wide text-charcoal group-hover:text-clay transition-colors duration-300">
+                    {item.title}
+                  </h4>
+                  <p className="text-[11px] text-charcoal/65 leading-relaxed font-light">
+                     {item.desc}
+                  </p>
+                </div>
               </div>
-              <h2 className="font-serif text-[clamp(2.4rem,4.5vw,4rem)] leading-[1.18] tracking-normal mt-2 text-charcoal">
-                A Living Break. <br />
-                <em className="italic text-forest">Not a holiday.</em>
-              </h2>
-              <p className="mt-4 text-base leading-relaxed text-charcoal/70 font-light max-w-lg">
-                A holiday distracts you from your life. A Living Break gives you back to it. We
-                bring together twelve people for five days of deep rest, tactile creativity, and
-                body-led practices in absolute quiet.
-              </p>
             </Reveal>
-
-            {/* List of practices pills */}
-            <div className="space-y-4 pt-4">
-              {items.map((item, idx) => (
-                <Reveal key={idx} delay={idx * 0.15}>
-                  <div className="group flex items-start gap-5 bg-white border border-charcoal/5 hover:border-clay/20 p-5 rounded-2xl shadow-capsule hover:shadow-luxury transition-all duration-500 hover:-translate-y-0.5">
-                    <div className="flex-shrink-0 w-11 h-11 rounded-full bg-clay/5 flex items-center justify-center group-hover:bg-clay group-hover:text-white transition-all duration-500">
-                      {item.icon}
-                    </div>
-                    <div className="space-y-1">
-                      <h4 className="font-sans text-sm font-semibold tracking-wide text-charcoal group-hover:text-clay transition-colors duration-300">
-                        {item.title}
-                      </h4>
-                      <p className="text-xs text-charcoal/65 leading-relaxed font-light">
-                        {item.desc}
-                      </p>
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-/* ───────────── BREATHING PACER ("THE GROUNDING ROOM") ───────────── */
-function BreathingPacer() {
-  const [active, setActive] = useState(false);
-  const [phase, setPhase] = useState<"inhale" | "hold" | "exhale" | "rest">("inhale");
-  const [timer, setTimer] = useState(4);
-
-  useEffect(() => {
-    if (!active) return;
-
-    const interval = setInterval(() => {
-      setTimer((prev) => {
-        if (prev <= 1) {
-          setPhase((currentPhase) => {
-            switch (currentPhase) {
-              case "inhale":
-                return "hold";
-              case "hold":
-                return "exhale";
-              case "exhale":
-                return "rest";
-              case "rest":
-                return "inhale";
-            }
-          });
-          return 4;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [active]);
-
-  const getInstructions = () => {
-    if (!active) return "Take a living break. Click to begin.";
-    switch (phase) {
-      case "inhale":
-        return "Breathe in slowly";
-      case "hold":
-        return "Hold your breath";
-      case "exhale":
-        return "Let it go";
-      case "rest":
-        return "Rest and observe";
-    }
-  };
-
-  const getCircleScale = () => {
-    if (!active) return 1.0;
-    switch (phase) {
-      case "inhale":
-        return 1.4;
-      case "hold":
-        return 1.4;
-      case "exhale":
-        return 0.85;
-      case "rest":
-        return 0.85;
-    }
-  };
-
-  return (
-    <section className="bg-charcoal text-offwhite py-24 md:py-36 relative overflow-hidden border-y border-offwhite/5 grain">
-      <div className="absolute inset-0 bg-gradient-to-b from-charcoal via-forest/15 to-charcoal pointer-events-none" />
-      {/* Floating abstract blobs */}
-      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-clay-soft/5 rounded-full blur-3xl pointer-events-none animate-float-reverse" />
-      <div className="absolute bottom-10 right-10 w-[30rem] h-[30rem] bg-forest/20 rounded-full blur-3xl pointer-events-none animate-float" />
-
-      <div className="mx-auto max-w-4xl px-6 text-center relative z-10 flex flex-col items-center">
-        <span className="eyebrow text-clay-soft mb-6">Somatic Pacer · Pause and Align</span>
-        <h2 className="font-serif text-[clamp(2.2rem,5vw,4.2rem)] mb-12 max-w-2xl leading-[1.22] text-white tracking-normal">
-          Slowing down isn't <em className="italic text-clay-soft font-light">abstract</em>. <br />
-          It starts with a breath.
-        </h2>
-
-        {/* Animated breathing circle */}
-        <div className="relative h-64 w-64 md:h-80 md:w-80 flex items-center justify-center">
-          <motion.div
-            animate={{
-              scale: getCircleScale(),
-              backgroundColor: active
-                ? phase === "inhale" || phase === "hold"
-                  ? "rgba(196,132,90,0.15)"
-                  : "rgba(86,92,70,0.18)"
-                : "rgba(247,244,239,0.02)",
-              borderColor: active ? "var(--clay)" : "rgba(247,244,239,0.1)",
-              boxShadow: active
-                ? phase === "inhale" || phase === "hold"
-                  ? "0 0 80px rgba(196,132,90,0.1)"
-                  : "0 0 80px rgba(86,92,70,0.15)"
-                : "0 0 0px rgba(0,0,0,0)",
-            }}
-            transition={{ duration: 4, ease: "easeInOut" }}
-            className="absolute inset-0 rounded-full border border-dashed flex items-center justify-center"
-          />
-
-          <motion.div
-            animate={{
-              scale: active && (phase === "inhale" || phase === "hold") ? 1.2 : 0.9,
-            }}
-            transition={{ duration: 4, ease: "easeInOut" }}
-            className="absolute h-40 w-40 rounded-full bg-forest/25 blur-3xl pointer-events-none"
-          />
-
-          <div className="relative z-10 flex flex-col items-center">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={getInstructions()}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.5 }}
-                className="font-serif text-2xl italic text-offwhite/90"
-              >
-                {getInstructions()}
-              </motion.span>
-            </AnimatePresence>
-            {active && (
-              <span className="font-sans text-[11px] uppercase tracking-widest text-clay-soft mt-3 font-semibold">
-                {timer} seconds
-              </span>
-            )}
-          </div>
-        </div>
-
-        <button
-          onClick={() => {
-            setActive(!active);
-            setPhase("inhale");
-            setTimer(4);
-          }}
-          className="mt-12 rounded-full border border-offwhite/20 px-8 py-3 text-[10px] uppercase tracking-[0.24em] bg-white/5 hover:bg-offwhite hover:text-charcoal transition duration-500 font-semibold"
-        >
-          {active ? "Pause Pacer" : "Begin Breathing"}
-        </button>
-      </div>
-    </section>
-  );
-}
+// Removed Somatic Pacer section
 
 /* ───────────── SOCIAL PROOF (TESTIMONIALS) ───────────── */
 function SocialProof() {
-  const quotes = [
+  const [activeSlide, setActiveSlide] = useState(0);
+  const testimonials = [
     {
-      word: "STAYED",
-      text: "I came for a break. I left with a different operating system.",
       name: "Vikram S.",
       role: "Founder, Series B SaaS",
+      quote: "I came for a break. I left with a different operating system.",
       img: movementImg,
     },
     {
-      word: "FELT",
-      text: "Five days that quietly rearranged the next five years.",
       name: "Anjali R.",
       role: "Creative Director",
+      quote: "Five days that quietly rearranged the next five years.",
       img: fireImg,
     },
     {
-      word: "MOVED",
-      text: "I forgot how loud my own life was until I stepped out of it.",
       name: "Devraj M.",
       role: "Investor",
+      quote: "I forgot how loud my own life was until I stepped out of it.",
       img: circleImg,
     },
   ];
 
-  const [i, setI] = useState(0);
-  const [timerReset, setTimerReset] = useState(0);
-
-  useEffect(() => {
-    const t = setInterval(() => setI((x) => (x + 1) % quotes.length), 6000);
-    return () => clearInterval(t);
-  }, [timerReset]);
-
-  const selectQuote = (idx: number) => {
-    setI(idx);
-    setTimerReset((prev) => prev + 1);
-  };
-
   return (
-    <section className="relative overflow-hidden bg-[#f3efe6]/40 py-24 md:py-36">
-      {/* Background huge word watermark */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 0.03, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 1.2, ease }}
-          className="pointer-events-none absolute inset-0 flex items-center justify-center"
-        >
-          <span className="font-serif text-[26vw] leading-none text-forest select-none font-bold">
-            {quotes[i].word}
-          </span>
-        </motion.div>
-      </AnimatePresence>
+    <section className="bg-cream text-charcoal py-16 md:py-24 overflow-hidden relative border-y border-charcoal/5">
+      {/* Background Image with soft elegant overlay */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">
+        <img
+          src="/people-like-you-bg.png"
+          alt="People Like You Background"
+          className="w-full h-full object-cover object-center opacity-65 mix-blend-multiply scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-cream via-cream/5 to-cream z-[1]" />
+      </div>
 
-      <div className="relative mx-auto max-w-[1000px] px-6 z-10 flex flex-col items-center">
-        {/* Testimonial label */}
+      <div className="mx-auto max-w-[1300px] px-6 md:px-12 relative z-10">
         <Reveal>
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <span className="eyebrow text-clay tracking-[0.24em]">03 / In Their Own Words</span>
+          <div className="flex flex-col items-center text-center max-w-2xl mx-auto mb-12">
+            <span className="eyebrow text-clay tracking-[0.24em] font-semibold text-xs uppercase mb-3 block">
+              What shifted for them
+            </span>
+            <h2 className="font-serif text-4xl md:text-6xl font-black text-charcoal tracking-tight leading-[1.05] text-center">
+              People Like You.
+            </h2>
+            <div className="w-20 h-0.5 bg-clay my-5 mx-auto" />
           </div>
         </Reveal>
 
-        {/* Big double quotes symbol */}
-        <div className="text-center">
-          <span className="font-serif text-[10rem] leading-none text-clay/20 pointer-events-none select-none block h-20 overflow-hidden">
-            “
-          </span>
-        </div>
-
-        {/* Quote Content and Speaker Details */}
-        <div className="w-full min-h-[260px] flex flex-col justify-center items-center mt-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.7, ease }}
-              className="flex flex-col items-center text-center space-y-8 w-full"
-            >
-              <blockquote className="font-serif text-[clamp(1.6rem,3.2vw,2.8rem)] italic leading-[1.35] text-charcoal tracking-normal max-w-3xl">
-                “{quotes[i].text}”
-              </blockquote>
-
-              <div className="flex flex-col items-center gap-3">
-                {/* Circular Bordered Avatar */}
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-clay shadow-md relative bg-charcoal/5">
-                  <img
-                    src={quotes[i].img}
-                    className="w-full h-full object-cover"
-                    alt={quotes[i].name}
-                  />
-                </div>
+        {/* Testimonials Grid */}
+        <div className="grid gap-6 md:grid-cols-3">
+          {testimonials.map((c, i) => (
+            <Reveal key={i} delay={i * 0.15}>
+              <div className="group bg-white border border-charcoal/10 hover:border-clay/30 p-6 rounded-sm shadow-sm hover:shadow-luxury transition-all duration-500 hover:-translate-y-1 flex flex-col justify-between h-full space-y-6 text-charcoal">
                 <div>
-                  <div className="eyebrow text-clay tracking-[0.24em] font-semibold text-[11px]">
-                    {quotes[i].name}
+                  <span className="font-serif text-4xl leading-none text-clay/20 select-none block h-3 overflow-hidden">
+                    “
+                  </span>
+                  <p className="font-serif text-base md:text-lg italic leading-relaxed text-charcoal/90 mt-1 font-light">
+                    “{c.quote}”
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 border-t border-charcoal/10 pt-4">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-clay/20 shadow-sm relative bg-charcoal/5">
+                    <img src={c.img} className="w-full h-full object-cover" alt={c.name} />
                   </div>
-                  <div className="mt-1 text-[9px] text-charcoal/45 uppercase tracking-widest font-semibold">
-                    {quotes[i].role}
+                  <div>
+                    <h4 className="font-sans text-xs font-bold tracking-wider text-clay">
+                      {c.name}
+                    </h4>
+                    <p className="text-[9px] text-charcoal/50 uppercase tracking-widest font-semibold mt-0.5">
+                      {c.role}
+                    </p>
                   </div>
                 </div>
               </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Centered Dots Navigation */}
-        <div className="flex gap-4 justify-center mt-12">
-          {quotes.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => selectQuote(idx)}
-              className="group relative py-3 cursor-pointer"
-            >
-              <div
-                className="h-[2.5px] w-8 rounded-full bg-charcoal/10 transition-all duration-500 hover:bg-clay/50"
-                style={{ background: idx === i ? "var(--clay)" : undefined }}
-              />
-            </button>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -1036,254 +915,307 @@ function SocialProof() {
 
 /* ───────────── METHOD ───────────── */
 function Method() {
-  const [hoveredStep, setHoveredStep] = useState<number | null>(null);
-  const [hoveredPractice, setHoveredPractice] = useState<number | null>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [justUnlocked, setJustUnlocked] = useState(false);
+  const touchStartY = useRef(0);
+  const isScrolling = useRef(false);
+  const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const steps = [
-    {
-      n: "01",
-      t: "Explore",
-      time: "Days 1 – 3",
-      focus: "The Clearing",
-      d: "Three days of stripping away the noise — slow walks, no phones, long silences, longer meals.",
-      img: forestImg,
-    },
-    {
-      n: "02",
-      t: "Express",
-      time: "Day 4",
-      focus: "Somatic Release",
-      d: "Movement, art, conversation. The body remembers what the mind has forgotten.",
-      img: movementImg,
-    },
-    {
-      n: "03",
-      t: "Evolve",
-      time: "Day 5",
-      focus: "The Integration",
-      d: "A return protocol. Not lessons — practices small enough to survive a Monday.",
-      img: circleImg,
-    },
-  ];
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!sectionRef.current) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const offsetTop = window.scrollY + rect.top;
+
+      const isOutOfSnapZone = rect.top < -120 || rect.top > 120;
+      if (isOutOfSnapZone) {
+        setJustUnlocked(false);
+      }
+
+      if (!isLocked && !justUnlocked) {
+        // If the top is within a snapping zone
+        if (rect.top >= -80 && rect.top <= 80) {
+          window.scrollTo({
+            top: offsetTop,
+            behavior: "smooth",
+          });
+          setIsLocked(true);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isLocked, justUnlocked]);
+
+  useEffect(() => {
+    if (!isLocked) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault(); // Block native page scroll
+
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+      }
+
+      if (isScrolling.current) {
+        scrollTimeout.current = setTimeout(() => {
+          isScrolling.current = false;
+        }, 150);
+        return;
+      }
+
+      isScrolling.current = true;
+
+      if (e.deltaY > 0) {
+        // Scroll down
+        if (activeIndex < 3) {
+          setActiveIndex((prev) => prev + 1);
+        } else {
+          setIsLocked(false);
+          setJustUnlocked(true);
+          window.scrollBy({ top: 150, behavior: "smooth" });
+        }
+      } else if (e.deltaY < 0) {
+        // Scroll up
+        if (activeIndex > 0) {
+          setActiveIndex((prev) => prev - 1);
+        } else {
+          setIsLocked(false);
+          setJustUnlocked(true);
+          window.scrollBy({ top: -150, behavior: "smooth" });
+        }
+      }
+
+      scrollTimeout.current = setTimeout(() => {
+        isScrolling.current = false;
+      }, 150);
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touchY = e.touches[0].clientY;
+      const deltaY = touchStartY.current - touchY;
+
+      if (Math.abs(deltaY) > 40) {
+        e.preventDefault(); // Block touch scroll inside snapping zone
+
+        if (scrollTimeout.current) {
+          clearTimeout(scrollTimeout.current);
+        }
+
+        if (isScrolling.current) {
+          scrollTimeout.current = setTimeout(() => {
+            isScrolling.current = false;
+          }, 150);
+          return;
+        }
+
+        isScrolling.current = true;
+
+        if (deltaY > 0) {
+          if (activeIndex < 3) {
+            setActiveIndex((prev) => prev + 1);
+            touchStartY.current = touchY;
+          } else {
+            setIsLocked(false);
+            setJustUnlocked(true);
+            window.scrollBy({ top: 150, behavior: "smooth" });
+          }
+        } else {
+          if (activeIndex > 0) {
+            setActiveIndex((prev) => prev - 1);
+            touchStartY.current = touchY;
+          } else {
+            setIsLocked(false);
+            setJustUnlocked(true);
+            window.scrollBy({ top: -150, behavior: "smooth" });
+          }
+        }
+
+        scrollTimeout.current = setTimeout(() => {
+          isScrolling.current = false;
+        }, 150);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown" || e.key === "PageDown") {
+        e.preventDefault();
+        if (isScrolling.current) return;
+
+        isScrolling.current = true;
+        setTimeout(() => {
+          isScrolling.current = false;
+        }, 700);
+
+        if (activeIndex < 3) {
+          setActiveIndex((prev) => prev + 1);
+        } else {
+          setIsLocked(false);
+          setJustUnlocked(true);
+          window.scrollBy({ top: 150, behavior: "smooth" });
+        }
+      } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+        e.preventDefault();
+        if (isScrolling.current) return;
+
+        isScrolling.current = true;
+        setTimeout(() => {
+          isScrolling.current = false;
+        }, 700);
+
+        if (activeIndex > 0) {
+          setActiveIndex((prev) => prev - 1);
+        } else {
+          setIsLocked(false);
+          setJustUnlocked(true);
+          window.scrollBy({ top: -150, behavior: "smooth" });
+        }
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("keydown", handleKeyDown, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("keydown", handleKeyDown);
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+      }
+    };
+  }, [isLocked, activeIndex]);
 
   const practices = [
-    { t: "Art", d: "Clay, paint, ink. No skill required.", iconD: "M4 22 Q12 4 22 18 T36 22" },
-    { t: "Movement", d: "Body-led practice. No mats of shame.", iconD: "M6 30 Q14 6 22 18 T34 8" },
+    {
+      t: "Art",
+      d: "Clay, paint, ink. No skill required.",
+      iconD: "M4 22 Q12 4 22 18 T36 22",
+      img: "/art.png",
+    },
+    {
+      t: "Movement",
+      d: "Body-led practice. No mats of shame.",
+      iconD: "M6 30 Q14 6 22 18 T34 8",
+      img: "/movement.png",
+    },
     {
       t: "Mindfulness",
       d: "Quiet attention. Not silent retreat.",
       iconD: "M4 20 C 8 8, 32 8, 36 20 C 32 32, 8 32, 4 20 Z",
+      img: "/mindfulness.png",
     },
     {
       t: "Connection",
       d: "Eleven strangers who become a circle.",
       iconD: "M6 28 L20 6 L34 28 Z M14 22 L26 22",
+      img: "/connection.png",
     },
   ];
 
   return (
     <section
+      ref={sectionRef}
       id="method"
-      className="bg-offwhite pt-24 pb-24 md:pt-32 md:pb-32 border-b border-hairline relative grain overflow-hidden"
+      className="relative h-screen bg-offwhite text-charcoal border-b border-charcoal/5 grain overflow-hidden flex flex-col justify-center items-center py-8 md:py-12"
     >
-      <div className="mx-auto max-w-[1500px] px-6 md:px-12 relative z-10">
-        <Reveal>
-          <div className="flex items-center gap-2 mb-4">
-            <span className="eyebrow text-clay">04 / The Method</span>
-          </div>
-          <h2 className="max-w-3xl font-serif text-[clamp(2.4rem,5.5vw,5rem)] leading-[1.18] tracking-normal mb-8">
-            Three movements. <em className="italic text-forest">One arc.</em>
+      <div className="w-full max-w-[1500px] px-6 md:px-12 flex flex-col h-full justify-between relative z-10">
+        
+        {/* Header Row */}
+        <div className="text-center max-w-2xl mx-auto mt-4 md:mt-6">
+          <span className="eyebrow text-clay tracking-[0.24em] font-semibold text-xs uppercase mb-2 block">
+            Four ways back to yourself
+          </span>
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-charcoal tracking-tight leading-[1.05]">
+            The Method.
           </h2>
-        </Reveal>
-
-        {/* Timeline Desktop View */}
-        <div className="relative mt-16 md:mt-24 hidden md:block">
-          {/* Horizontal connecting line */}
-          <div className="absolute left-[12%] right-[12%] top-[232px] h-[1px] bg-clay/15 -z-10">
-            <motion.div
-              className="h-full bg-clay/60"
-              initial={{ width: "0%" }}
-              whileInView={{ width: "100%" }}
-              viewport={{ once: false }}
-              transition={{ duration: 1.5, ease }}
-            />
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-3">
-            {steps.map((s, i) => (
-              <Reveal key={s.n} delay={i * 0.18}>
-                <div
-                  onMouseEnter={() => setHoveredStep(i)}
-                  onMouseLeave={() => setHoveredStep(null)}
-                  className="group relative flex h-full flex-col bg-[#f4efe4]/65 backdrop-blur-sm border border-charcoal/5 p-8 text-charcoal transition-all duration-500 hover:bg-white hover:-translate-y-2 rounded-sm shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-[0_16px_40px_rgba(202,110,66,0.05)] hover:border-clay/20 overflow-hidden"
-                >
-                  {/* Editorial Photo Frame */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden border border-charcoal/5 mb-6 rounded-sm bg-charcoal/5 z-10">
-                    <motion.img
-                      src={s.img}
-                      alt={s.t}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
-                    />
-                  </div>
-
-                  {/* Timeline Intersection Node */}
-                  <div className="absolute top-[180px] left-[40px] w-5 h-5 rounded-full border-2 border-clay/35 bg-[#f4efe4] z-20 flex items-center justify-center transition-all duration-500 group-hover:border-clay group-hover:scale-110 group-hover:bg-clay">
-                    <motion.div
-                      className="w-1.5 h-1.5 rounded-full bg-clay transition-all duration-500 group-hover:bg-offwhite"
-                      animate={hoveredStep === i ? { scale: [1, 1.5, 1] } : {}}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    />
-                  </div>
-
-                  {/* Large watermarked serif number */}
-                  <span className="font-serif text-[10rem] font-bold text-clay/3 absolute right-6 bottom-[-20px] pointer-events-none select-none transition-colors duration-500 group-hover:text-clay/6 leading-none">
-                    {s.n}
-                  </span>
-
-                  {/* Phase tags and time indicator */}
-                  <div className="flex flex-col gap-2 mb-10 relative z-10">
-                    <div className="flex items-center justify-between">
-                      <span className="bg-clay/5 border border-clay/15 text-clay text-[9.5px] font-semibold tracking-[0.24em] uppercase px-3 py-1 rounded-full">
-                        {s.time}
-                      </span>
-                      <span className="text-[9.5px] uppercase tracking-wider text-charcoal/40 font-medium">
-                        {s.focus}
-                      </span>
-                    </div>
-                  </div>
-
-                  <h3 className="font-serif text-3.5xl text-charcoal group-hover:text-clay transition-colors duration-300 leading-tight mb-4 relative z-10">
-                    {s.t}
-                  </h3>
-                  <div className="h-px w-8 bg-clay/25 mb-6 group-hover:w-16 group-hover:bg-clay transition-all duration-500 relative z-10" />
-                  <p className="max-w-sm text-base leading-relaxed text-charcoal/65 font-light relative z-10">
-                    {s.d}
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <div className="w-16 h-0.5 bg-clay mt-3 mx-auto" />
         </div>
 
-        {/* Timeline Mobile View */}
-        <div className="relative mt-12 md:hidden pl-8">
-          {/* Vertical connection line */}
-          <div className="absolute left-[15px] top-6 bottom-6 w-[1px] bg-clay/15">
-            <motion.div
-              className="w-full bg-clay/60 origin-top"
-              initial={{ scaleY: 0 }}
-              whileInView={{ scaleY: 1 }}
-              viewport={{ once: false }}
-              transition={{ duration: 1.5, ease }}
-              style={{ height: "100%" }}
-            />
-          </div>
-
-          <div className="flex flex-col gap-10">
-            {steps.map((s, i) => (
-              <Reveal key={s.n} delay={i * 0.1}>
-                <div className="relative group">
-                  {/* Mobile Timeline Node */}
-                  <div className="absolute left-[-31.5px] top-2 w-[17px] h-[17px] rounded-full border-2 border-clay/35 bg-offwhite z-20 flex items-center justify-center transition-all duration-500 group-hover:border-clay group-hover:bg-clay">
-                    <div className="w-1.5 h-1.5 rounded-full bg-clay group-hover:bg-offwhite" />
-                  </div>
-
-                  <div className="group relative flex flex-col bg-[#f4efe4]/65 backdrop-blur-sm border border-charcoal/5 p-6 text-charcoal rounded-sm shadow-sm hover:bg-white transition-all duration-500 hover:border-clay/20">
-                    {/* Faint large step number */}
-                    <span className="font-serif text-[6.5rem] font-bold text-clay/3 absolute right-2 bottom-[-15px] pointer-events-none select-none leading-none">
-                      {s.n}
-                    </span>
-
-                    {/* Mobile Photo Frame */}
-                    <div className="relative aspect-[16/10] w-full overflow-hidden border border-charcoal/5 mb-4 rounded-sm bg-charcoal/5">
+        {/* Active Card Container */}
+        <div className="flex-1 flex items-center justify-center my-4 md:my-8">
+          <div className="w-full max-w-4xl relative h-[480px] sm:h-[420px] md:h-[380px]">
+            <AnimatePresence mode="wait">
+              {practices.map((p, i) => {
+                if (i !== activeIndex) return null;
+                return (
+                  <motion.div
+                    key={p.t}
+                    initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -30, scale: 0.98 }}
+                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute inset-0 bg-white border border-charcoal/10 rounded-sm shadow-luxury overflow-hidden grid grid-rows-[200px_1fr] md:grid-rows-none md:grid-cols-2 h-full"
+                  >
+                    {/* Left: Image Container */}
+                    <div className="relative h-full w-full overflow-hidden bg-charcoal/5">
                       <img
-                        src={s.img}
-                        alt={s.t}
-                        className="absolute inset-0 h-full w-full object-cover"
+                        src={p.img}
+                        alt={p.t}
+                        className="w-full h-full object-cover"
                       />
+                      <div className="absolute inset-0 bg-charcoal/5 mix-blend-multiply" />
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <span className="bg-clay/5 border border-clay/15 text-clay text-[9px] tracking-[0.2em] font-semibold uppercase px-2.5 py-0.5 rounded-full">
-                        {s.time}
-                      </span>
-                      <span className="text-[9px] uppercase tracking-widest text-charcoal/40 font-medium">
-                        {s.focus}
-                      </span>
-                    </div>
+                    {/* Right: Content Container */}
+                    <div className="p-6 md:p-10 flex flex-col justify-between h-full relative">
+                      {/* Background subtle glow */}
+                      <div className="absolute -inset-40 bg-gradient-to-br from-clay/5 to-transparent opacity-100 blur-3xl pointer-events-none" />
 
-                    <h3 className="font-serif text-2xl text-charcoal mb-2 leading-tight">{s.t}</h3>
-                    <div className="h-px w-8 bg-clay/25 mb-4" />
-                    <p className="text-[14px] leading-relaxed text-charcoal/65 font-light">{s.d}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
+                      <div className="space-y-4 md:space-y-6 relative z-10">
+                        {/* Icon & Sparkle */}
+                        <div className="flex items-center justify-between">
+                          <div className="w-10 h-10 rounded-full border border-clay/15 bg-clay/5 flex items-center justify-center text-clay">
+                            <PathIcon d={p.iconD} isHovered={true} size={20} />
+                          </div>
+                          <Sparkles className="h-4.5 w-4.5 text-clay-soft" />
+                        </div>
 
-        {/* Practices Section */}
-        <div className="mt-28 md:mt-32">
-          <Reveal>
-            <div className="eyebrow mb-10 text-charcoal/40 font-semibold">The Practices</div>
-          </Reveal>
-
-          <div className="grid gap-8 sm:grid-cols-2">
-            {practices.map((p, i) => (
-              <Reveal key={p.t} delay={i * 0.1}>
-                <div
-                  onMouseEnter={() => setHoveredPractice(i)}
-                  onMouseLeave={() => setHoveredPractice(null)}
-                  className="group relative flex flex-col sm:flex-row gap-8 items-start bg-white/95 backdrop-blur-sm border border-charcoal/5 p-8 md:p-10 text-charcoal transition-all duration-700 hover:bg-forest hover:text-offwhite hover:border-forest rounded-sm shadow-sm hover:shadow-xl overflow-hidden h-full"
-                >
-                  {/* Subtle radial glow highlights */}
-                  <div className="absolute -inset-40 bg-gradient-to-br from-clay/5 to-transparent opacity-0 transition-opacity duration-1000 group-hover:opacity-100 blur-3xl pointer-events-none" />
-
-                  {/* Left Side: Icon Circle Container */}
-                  <div className="flex-shrink-0 w-16 h-16 rounded-full border border-clay/15 bg-clay/5 group-hover:bg-white/10 group-hover:border-white/20 flex items-center justify-center text-clay group-hover:text-clay-soft transition-all duration-500">
-                    <PathIcon d={p.iconD} isHovered={hoveredPractice === i} size={28} />
-                  </div>
-
-                  {/* Right Side: Content */}
-                  <div className="flex-1 space-y-3 relative z-10 w-full">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="eyebrow text-clay group-hover:text-clay-soft font-semibold tracking-[0.24em] transition-colors duration-500">
-                        {p.t}
+                        {/* Title & Desc */}
+                        <div className="space-y-3">
+                          <h3 className="font-serif text-xl md:text-2xl font-bold tracking-[0.12em] text-charcoal">
+                            {p.t}
+                          </h3>
+                          <p className="text-xs md:text-sm leading-relaxed text-charcoal/70 font-light">
+                            {p.d}
+                          </p>
+                        </div>
                       </div>
-                      {/* Decorative Sparkle for luxury accent */}
-                      <motion.div
-                        className="text-clay/20 group-hover:text-clay-soft transition-colors duration-500"
-                        animate={
-                          hoveredPractice === i
-                            ? { rotate: 90, scale: 1.15 }
-                            : { rotate: 0, scale: 1 }
-                        }
-                        transition={{ duration: 0.6, ease }}
-                      >
-                        <Sparkles className="h-4 w-4" />
-                      </motion.div>
-                    </div>
-                    <p className="text-base leading-relaxed text-charcoal/65 group-hover:text-offwhite/80 font-light transition-colors duration-500">
-                      {p.d}
-                    </p>
-                  </div>
 
-                  {/* Sliding terracotta baseline indicator */}
-                  <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-clay transition-all duration-500 group-hover:w-full" />
-                </div>
-              </Reveal>
-            ))}
+                      {/* Pagination indicator inside card */}
+                      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-charcoal/5 relative z-10">
+                        {practices.map((_, idx) => (
+                          <div
+                            key={idx}
+                            className={`h-1.5 rounded-full transition-all duration-500 ${
+                              idx === activeIndex
+                                ? "w-8 bg-clay"
+                                : "w-2 bg-charcoal/10"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
         </div>
 
-        <Reveal delay={0.2}>
-          <p className="mx-auto mt-20 max-w-3xl text-center font-serif text-3xl leading-snug text-charcoal md:text-4xl italic">
-            Five days that quietly rearrange{" "}
-            <em className="italic text-clay font-normal font-serif">the next five years</em>.
-          </p>
-        </Reveal>
+        {/* Bottom Scrolling hint / Indicator */}
+
+
       </div>
     </section>
   );
@@ -1316,200 +1248,425 @@ function PathIcon({ d, isHovered, size = 24 }: { d: string; isHovered: boolean; 
 
 /* ───────────── GALLERY (SOCIAL FEED) ───────────── */
 function Gallery() {
+  const images = [
+    {
+      src: movementImg,
+      alt: "Somatic movement on deck",
+      className: "col-span-1 row-span-2",
+    },
+    {
+      src: forestImg,
+      alt: "Forest path walk",
+      className: "col-span-1 row-span-1",
+    },
+    {
+      src: clayImg,
+      alt: "Hands folding clay",
+      className: "col-span-2 row-span-2",
+    },
+    {
+      src: circleImg,
+      alt: "Meditation circle",
+      className: "col-span-1 row-span-2",
+    },
+    {
+      src: fireImg,
+      alt: "Fire circle sharing",
+      className: "col-span-1 row-span-1",
+    },
+    {
+      src: heroImg,
+      alt: "Goa beach retreat view",
+      className: "col-span-2 row-span-2",
+    },
+    {
+      src: founderImg,
+      alt: "Aman facilitating circle",
+      className: "col-span-1 row-span-2",
+    },
+    {
+      src: karanImg,
+      alt: "Somatic integration",
+      className: "col-span-1 row-span-1",
+    },
+    {
+      src: meeraImg,
+      alt: "Morning yoga practice",
+      className: "col-span-1 row-span-1",
+    },
+    {
+      src: priyaImg,
+      alt: "Quiet reflection journaling",
+      className: "col-span-1 row-span-1",
+    },
+    {
+      src: rohanImg,
+      alt: "Coastal sunset walk group",
+      className: "col-span-1 row-span-1",
+    },
+  ];
+
   return (
-    <section className="bg-cream py-24 md:py-36 border-t border-hairline overflow-hidden">
+    <section className="bg-charcoal text-white py-16 md:py-20 border-t border-white/5 overflow-hidden">
       <div className="mx-auto max-w-[1300px] px-6 md:px-12">
         <Reveal>
-          <div className="text-center max-w-xl mx-auto mb-16">
-            <span className="eyebrow text-clay tracking-[0.24em] font-semibold text-xs">
-              A Living Feed
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <span className="eyebrow text-clay-soft tracking-[0.24em] font-semibold text-xs uppercase mb-3 block">
+              __no performance required.
             </span>
-            <h2 className="font-serif text-3xl md:text-5xl text-charcoal leading-tight mt-3">
-              Follow Us <em className="italic text-forest">@LifeMoves</em>
+            <h2 className="font-serif text-3.5xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tight leading-[1.05] text-center">
+              Real Moments. Real People.
             </h2>
+            <div className="w-20 h-0.5 bg-clay my-6 mx-auto" />
           </div>
         </Reveal>
 
-        {/* Organic Staggered Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 items-start">
-          {/* Column 1: Tall Yoga/Movement */}
-          <Reveal delay={0.1}>
-            <div className="group relative overflow-hidden rounded-[2rem] shadow-md hover:shadow-luxury transition-all duration-500 hover:-translate-y-1 bg-charcoal/5 aspect-[3/4]">
-              <img
-                src={movementImg}
-                alt="Somatic movement on deck"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-charcoal/25 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                <span className="text-white text-[10px] uppercase tracking-[0.2em] font-semibold">
-                  View Post
-                </span>
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Column 2: Medium Forest path */}
-          <Reveal delay={0.2}>
-            <div className="group relative overflow-hidden rounded-[2rem] shadow-md hover:shadow-luxury transition-all duration-500 hover:-translate-y-1 bg-charcoal/5 aspect-[3/4] lg:mt-8">
-              <img
-                src={forestImg}
-                alt="Forest path walk"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-charcoal/25 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                <span className="text-white text-[10px] uppercase tracking-[0.2em] font-semibold">
-                  View Post
-                </span>
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Column 3: Stacked images (clay & fire) */}
-          <div className="flex flex-col gap-6">
-            <Reveal delay={0.3}>
-              <div className="group relative overflow-hidden rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1 bg-charcoal/5 aspect-square">
+        {/* Organic Masonry/Grid Collage */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 grid-flow-row-dense gap-3 md:gap-4 auto-rows-[120px] sm:auto-rows-[140px] md:auto-rows-[160px] lg:auto-rows-[190px] max-w-[1250px] mx-auto py-6">
+          {images.map((item, idx) => (
+            <Reveal key={idx} delay={idx * 0.04} className={`${item.className} h-full`}>
+              <div
+                className="group relative w-full h-full overflow-hidden rounded-xl bg-charcoal/20 cursor-pointer"
+              >
                 <img
-                  src={clayImg}
-                  alt="Hands folding clay"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  src={item.src}
+                  alt={item.alt}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 />
-                <div className="absolute inset-0 bg-charcoal/25 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                  <span className="text-white text-[9px] uppercase tracking-[0.2em] font-semibold">
-                    View Post
-                  </span>
-                </div>
+                {/* Subtle hover overlay */}
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               </div>
             </Reveal>
+          ))}
+        </div>
 
-            <Reveal delay={0.4}>
-              <div className="group relative overflow-hidden rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-1 bg-charcoal/5 aspect-square">
-                <img
-                  src={fireImg}
-                  alt="Fire circle assembly"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-charcoal/25 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                  <span className="text-white text-[9px] uppercase tracking-[0.2em] font-semibold">
-                    View Post
-                  </span>
+        <Reveal delay={0.2}>
+          <div className="mt-12 text-center">
+            <p className="font-serif text-xl md:text-2xl text-offwhite/80 tracking-wide font-light">
+              Twelve people. Five days.{" "}
+              <em className="italic text-clay-soft font-serif font-normal">
+                This is what it actually looks like.
+              </em>
+            </p>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ───────────── THE OUTCOME ───────────── */
+function Outcome() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const outcomes = [
+    {
+      title: "A clearer decision they’ve been avoiding",
+      description: "Gain the distance needed to cut through the noise, leaving Goa with absolute clarity on the single most critical choice ahead of you.",
+      image: circleImg,
+      tagline: "Clarity",
+    },
+    {
+      title: "A conversation they’ve needed to have",
+      description: "Reclaim your voice. Learn how to speak from a place of alignment, resolving long-standing tension with honesty and grace.",
+      image: clayImg,
+      tagline: "Expression",
+    },
+    {
+      title: "A different relationship with themselves.",
+      description: "Shift from constant self-critique to a deeper state of self-trust and somatic presence that supports your long-term expansion.",
+      image: forestImg,
+      tagline: "Self-Trust",
+    },
+    {
+      title: "More energy than they arrived with",
+      description: "Release deep physical fatigue through morning movement, breath, and soundscapes, returning home fully recharged.",
+      image: movementImg,
+      tagline: "Vitality",
+    },
+    {
+      title: "Practical practices to carry home",
+      description: "Simple, repeatable daily habits—somatic tools, journaling techniques, and breathing exercises—that fit seamlessly into your life.",
+      image: fireImg,
+      tagline: "Integration",
+    },
+    {
+      title: "A 90-day map to keep moving",
+      description: "A structured integration path designed to keep the momentum going, ensuring the changes translate into lasting routine.",
+      image: heroImg,
+      tagline: "Direction",
+    },
+  ];
+
+  const AUTO_PLAY_INTERVAL = 5000; // 5 seconds
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % outcomes.length);
+    }, AUTO_PLAY_INTERVAL);
+
+    return () => clearInterval(timer);
+  }, [activeIndex, outcomes.length]);
+
+  const handlePrev = () => {
+    setActiveIndex((prev) => (prev - 1 + outcomes.length) % outcomes.length);
+  };
+
+  const handleNext = () => {
+    setActiveIndex((prev) => (prev + 1) % outcomes.length);
+  };
+
+  const handleDotClick = (idx: number) => {
+    setActiveIndex(idx);
+  };
+
+  return (
+    <section
+      id="outcome"
+      className="scroll-mt-32 bg-cream text-charcoal py-24 md:py-36 relative overflow-hidden border-t border-charcoal/5"
+    >
+      {/* Floating abstract decorative elements */}
+      <div className="absolute top-1/3 -left-48 w-[35rem] h-[35rem] bg-moss/5 rounded-full blur-3xl pointer-events-none animate-float-reverse" />
+      <div className="absolute bottom-10 right-10 w-[30rem] h-[30rem] bg-clay/5 rounded-full blur-3xl pointer-events-none animate-float" />
+
+      <div className="mx-auto max-w-[1300px] px-6 md:px-12 relative z-10">
+        <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr] items-center">
+          
+          {/* Left Column: Heading and Subtitle */}
+          <div className="space-y-6 lg:sticky lg:top-40 h-fit">
+            <Reveal>
+              <span className="eyebrow text-clay tracking-[0.24em] font-semibold text-xs uppercase mb-1 block">
+                Not temporary inspiration
+              </span>
+              <h2 className="font-serif text-5xl md:text-8xl font-black text-charcoal tracking-tight leading-[1.05]">
+                The Outcome.
+              </h2>
+              <div className="w-20 h-0.5 bg-clay my-6" />
+            </Reveal>
+            
+            <Reveal delay={0.15}>
+              <div className="space-y-4 max-w-md">
+                <p className="text-base leading-relaxed text-charcoal/80 font-light">
+                  Something real to take home.
+                </p>
+                <div className="flex flex-wrap items-center gap-4 text-lg md:text-xl font-serif italic text-clay tracking-wider mt-6">
+                  <span>Clarity.</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-charcoal/20" />
+                  <span>Energy.</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-charcoal/20" />
+                  <span>Truth.</span>
                 </div>
               </div>
             </Reveal>
           </div>
 
-          {/* Column 4: Tall group circle */}
-          <Reveal delay={0.5}>
-            <div className="group relative overflow-hidden rounded-[2rem] shadow-md hover:shadow-luxury transition-all duration-500 hover:-translate-y-1 bg-charcoal/5 aspect-[3/4] lg:mt-4">
-              <img
-                src={circleImg}
-                alt="Group sitting in villa circle"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-charcoal/25 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                <span className="text-white text-[10px] uppercase tracking-[0.2em] font-semibold">
-                  View Post
-                </span>
+          {/* Right Column: Unified Auto-Sliding Card */}
+          <div className="w-full">
+            <div className="bg-cream/40 backdrop-blur-md rounded-2xl border border-charcoal/10 shadow-2xl overflow-hidden grid md:grid-cols-[1.1fr_1.4fr] items-stretch min-h-[460px] relative group">
+              
+              {/* Left side: Animated Image Frame */}
+              <div className="relative h-64 md:h-auto overflow-hidden bg-charcoal/5">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeIndex}
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute inset-0 w-full h-full"
+                  >
+                    <img
+                      src={outcomes[activeIndex].image}
+                      alt={outcomes[activeIndex].title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 via-transparent to-transparent pointer-events-none" />
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Floating Category Tag */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeIndex}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute bottom-4 left-4 z-20 bg-cream/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-charcoal/5 shadow-sm text-[10px] uppercase tracking-widest font-semibold text-charcoal/80"
+                  >
+                    {outcomes[activeIndex].tagline}
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Massive decorative background number */}
+                <div className="absolute top-2 right-2 text-white/10 text-9xl font-serif font-black select-none pointer-events-none">
+                  0{activeIndex + 1}
+                </div>
               </div>
+
+              {/* Right side: Active Content Panel */}
+              <div className="p-8 md:p-12 flex flex-col justify-between h-full bg-cream/90">
+                {/* Text Content */}
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif text-sm font-semibold text-clay tracking-wider">
+                      Outcome 0{activeIndex + 1} of 06
+                    </span>
+                    <span className="text-[10px] bg-forest/10 text-forest px-2.5 py-1 rounded-full uppercase tracking-wider font-semibold">
+                      Retreat Benefit
+                    </span>
+                  </div>
+
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeIndex}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -15 }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                      className="space-y-4"
+                    >
+                      <h3 className="font-serif text-2.5xl md:text-3.5xl text-forest font-bold tracking-tight leading-[1.2]">
+                        {outcomes[activeIndex].title}
+                      </h3>
+                      <p className="text-base md:text-lg leading-relaxed text-charcoal/80 font-light">
+                        {outcomes[activeIndex].description}
+                      </p>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Controls (Progress Bar + Navigation) */}
+                <div className="mt-8 pt-6 border-t border-charcoal/5 space-y-6">
+                  {/* Progress Line indicators */}
+                  <div className="flex gap-2.5">
+                    {outcomes.map((_, idx) => {
+                      const isActive = idx === activeIndex;
+                      return (
+                        <div
+                          key={idx}
+                          className="h-1 flex-1 bg-charcoal/10 rounded-full overflow-hidden cursor-pointer relative"
+                          onClick={() => handleDotClick(idx)}
+                        >
+                          {isActive && (
+                            <motion.div
+                              className="absolute inset-y-0 left-0 bg-clay"
+                              initial={{ width: "0%" }}
+                              animate={{ width: "100%" }}
+                              transition={{ duration: AUTO_PLAY_INTERVAL / 1000, ease: "linear" }}
+                              key={activeIndex} // Reset animation when activeIndex changes
+                            />
+                          )}
+                          {!isActive && idx < activeIndex && (
+                            <div className="absolute inset-0 bg-clay/40" />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Previous / Next buttons */}
+                  <div className="flex items-center justify-end">
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={handlePrev}
+                        className="w-10 h-10 rounded-full border border-charcoal/10 flex items-center justify-center text-charcoal/60 hover:text-clay hover:border-clay transition-all duration-300 active:scale-95 cursor-pointer"
+                        aria-label="Previous outcome"
+                      >
+                        <ArrowRight className="h-4.5 w-4.5 rotate-180" />
+                      </button>
+                      <button
+                        onClick={handleNext}
+                        className="w-10 h-10 rounded-full border border-charcoal/10 flex items-center justify-center text-charcoal/60 hover:text-clay hover:border-clay transition-all duration-300 active:scale-95 cursor-pointer"
+                        aria-label="Next outcome"
+                      >
+                        <ArrowRight className="h-4.5 w-4.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
-          </Reveal>
+          </div>
+
         </div>
       </div>
     </section>
   );
 }
 
-/* ───────────── FOUNDER ───────────── */
-function Founder() {
+/* ───────────── MEET YOUR FACILITATOR (SECTION 8) ───────────── */
+function Facilitator({ onApply }: { onApply: () => void }) {
   return (
     <section
       id="founder"
-      className="scroll-mt-32 bg-offwhite py-32 md:py-44 relative overflow-hidden"
+      className="scroll-mt-32 bg-offwhite text-charcoal py-32 md:py-44 relative overflow-hidden border-t border-charcoal/5"
     >
+      {/* Section Background Image */}
+      <img
+        src={founderBgImg}
+        alt="Facilitator Background"
+        className="absolute inset-0 w-full h-full object-cover opacity-[0.18] pointer-events-none z-0"
+      />
+
       {/* Floating abstract blobs */}
-      <div className="absolute bottom-10 left-10 w-[30rem] h-[30rem] bg-clay/5 rounded-full blur-3xl pointer-events-none animate-float" />
-      <div className="absolute top-10 right-10 w-[35rem] h-[35rem] bg-[#e3decf]/60 rounded-full blur-3xl pointer-events-none animate-float-reverse" />
+      <div className="absolute bottom-10 left-10 w-[30rem] h-[30rem] bg-clay/5 rounded-full blur-3xl pointer-events-none animate-float z-10" />
+      <div className="absolute top-10 right-10 w-[35rem] h-[35rem] bg-[#e3decf]/10 rounded-full blur-3xl pointer-events-none animate-float-reverse z-10" />
 
-      <div className="mx-auto max-w-[1500px] px-6 md:px-12 relative z-10">
-        <div className="grid gap-16 md:grid-cols-[1fr_1.1fr] md:gap-24 items-center">
-          <div className="relative group">
-            <div className="absolute -inset-3 bg-clay/5 rounded-sm -rotate-1 transition-transform duration-500 group-hover:rotate-0" />
-            <div className="absolute inset-0 border border-clay/10 translate-x-4 translate-y-4 -z-10" />
+      <div className="mx-auto max-w-[1500px] px-6 md:px-12 relative z-20">
+        <div className="grid gap-16 md:grid-cols-[0.75fr_1.25fr] md:gap-20 items-center max-w-5xl mx-auto">
+          {/* Photo frame */}
+          <div className="relative max-w-[340px] w-full mx-auto md:mr-0">
+            {/* Wrapper for image and its borders */}
+            <div className="relative group">
+              <div className="absolute -inset-1 border border-clay/30 translate-x-4 translate-y-4 rounded-sm pointer-events-none transition-transform duration-700 group-hover:translate-x-2 group-hover:translate-y-2" />
+              <div className="absolute -inset-1 border border-charcoal/10 -translate-x-3 -translate-y-3 rounded-sm pointer-events-none transition-transform duration-700 group-hover:-translate-x-1 group-hover:-translate-y-1" />
 
-            <Parallax amount={15}>
-              <ClipReveal
-                src={founderImg}
-                alt="Aman, founder of Life Moves"
-                ratio="aspect-[4/5]"
-                className="shadow-2xl border border-charcoal/10"
-              />
-            </Parallax>
+              <Parallax amount={15}>
+                <ClipReveal
+                  src={founderImg}
+                  alt="Aman Gupta, Facilitator of Life Moves"
+                  ratio="aspect-[4/5]"
+                  className="shadow-2xl border border-charcoal/10 rounded-sm"
+                />
+              </Parallax>
+            </div>
 
+            {/* Signature Outside Borders */}
             <div className="mt-8 flex items-center gap-4 border-l border-clay/35 pl-4">
-              <span className="font-serif text-2xl italic font-serif">— Aman</span>
-              <span className="eyebrow text-charcoal/40 text-[9px] font-semibold tracking-widest relative top-[0.5px]">
-                Founder, Life Moves
+              <span className="font-serif text-2xl italic font-serif">— Aman Gupta</span>
+              <span className="eyebrow text-charcoal/50 text-[9px] font-semibold tracking-widest relative top-[0.5px]">
+                Facilitator, Life Moves
               </span>
             </div>
           </div>
 
-          <div>
+          {/* Details */}
+          <div className="space-y-6">
             <Reveal>
-              <div className="flex items-center gap-2 mb-6">
-                <span className="eyebrow text-clay">06 / The Person Behind It</span>
-              </div>
-              <h2 className="font-serif text-[clamp(2.4rem,4.8vw,4.4rem)] leading-[1.18] tracking-normal">
-                Fifteen years asking <br />
-                <em className="italic text-clay font-light font-serif">one stubborn question.</em>
+              <span className="eyebrow text-clay tracking-[0.24em] font-semibold text-xs uppercase mb-2 block">
+                Aman Gupta · Facilitator
+              </span>
+              <h2 className="font-serif text-5xl md:text-8xl font-black text-charcoal tracking-tight leading-[1.05]">
+                Led By.
               </h2>
+              <div className="w-20 h-0.5 bg-clay my-6" />
             </Reveal>
 
             <Reveal delay={0.15}>
-              <p className="mt-8 max-w-lg text-base leading-relaxed text-charcoal/75 font-light">
-                I spent a decade in the rooms most people are trying to get into. Boardrooms, brand
-                decks, investor calls. Then I spent five years walking out of them — into ashrams,
-                art studios, mountains, and the quietest beaches in Goa — to figure out what nobody
-                around the table was asking.
-              </p>
-            </Reveal>
-
-            <Reveal delay={0.25}>
-              <blockquote className="my-10 border-l-2 border-clay pl-6 font-serif text-3xl italic leading-snug text-forest md:text-3xl font-serif">
-                Not "how do you feel right now?" but{" "}
-                <span className="text-clay font-normal not-italic relative after:absolute after:bottom-1 after:left-0 after:w-full after:h-px after:bg-clay/30">
-                  how do you actually want to live?
-                </span>
-              </blockquote>
-            </Reveal>
-
-            <div className="grid grid-cols-3 gap-6 border-y border-hairline py-8 items-start">
-              {[
-                { n: 15, s: "", l: "Years on the road" },
-                { n: 3, s: "", l: "Countries studied in" },
-                { n: 400, s: "+", l: "Guests, twelve at a time" },
-              ].map((x) => (
-                <Reveal key={x.l}>
-                  <div className="flex flex-col">
-                    <div className="font-serif text-4xl text-clay md:text-5xl font-medium">
-                      <Counter to={x.n} suffix={x.s} />
-                    </div>
-                    <div className="eyebrow mt-3 text-charcoal/50 text-[9px] tracking-wider leading-relaxed min-h-[2.5rem]">
-                      {x.l}
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-
-            <Reveal delay={0.2}>
-              <a
-                href="#"
-                className="mt-8 inline-flex items-center gap-4 eyebrow text-[10px] text-clay hover:text-charcoal transition group"
-              >
-                <span className="grid h-12 w-12 place-items-center rounded-full border border-clay/30 group-hover:border-clay group-hover:bg-clay group-hover:text-offwhite transition duration-500">
-                  <Play className="h-4 w-4 fill-current ml-0.5" />
-                </span>
-                <span className="font-semibold tracking-[0.2em]">Watch Aman's story · 4 min</span>
-              </a>
+              <div className="space-y-6 max-w-xl">
+                <p className="text-base leading-relaxed text-charcoal/90 font-medium">
+                  15 years of practice. 200+ retreats and workshops. 10,000+ people taught from
+                  India, Europe, the US, and Southeast Asia.
+                </p>
+                <p className="text-base leading-relaxed text-charcoal/70 font-light">
+                  Aman built Life Moves around one question most growth programmes never ask: how do
+                  you actually want to live? A Living Break is where that question gets answered —
+                  through movement, art, and the body, not just talk.
+                </p>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -1550,7 +1707,7 @@ function Editions({ onApply }: { onApply: () => void }) {
   return (
     <section
       id="editions"
-      className="scroll-mt-24 py-24 md:py-36 bg-offwhite relative overflow-hidden"
+      className="scroll-mt-24 py-24 md:py-36 bg-cream text-charcoal relative overflow-hidden border-t border-charcoal/5"
     >
       {/* Soft abstract background blobs */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-clay/5 rounded-full blur-3xl pointer-events-none" />
@@ -1558,7 +1715,7 @@ function Editions({ onApply }: { onApply: () => void }) {
 
       <div className="mx-auto max-w-[1200px] px-6 md:px-12 relative z-10">
         {/* Main outer card container with curved/wavy shapes */}
-        <div className="bg-[#eae4d5] rounded-[2.5rem] p-8 md:p-14 border border-charcoal/5 shadow-luxury relative overflow-hidden">
+        <div className="bg-white rounded-sm p-8 md:p-14 border border-charcoal/10 shadow-luxury relative overflow-hidden">
           {/* Top curved SVG overlay line for abstract accent */}
           <div className="absolute top-0 left-0 w-full h-10 pointer-events-none opacity-30">
             <svg
@@ -1572,22 +1729,23 @@ function Editions({ onApply }: { onApply: () => void }) {
             </svg>
           </div>
 
-          <div className="text-center max-w-xl mx-auto mb-12 relative z-10">
-            <span className="eyebrow text-clay tracking-[0.24em] font-semibold text-xs">
-              Upcoming Retreats
+          <div className="text-center max-w-2xl mx-auto mb-12 relative z-10">
+            <span className="eyebrow text-clay tracking-[0.24em] font-semibold text-xs uppercase mb-3 block">
+              Small circle · Limited places
             </span>
-            <h2 className="font-serif text-3xl md:text-5xl text-charcoal leading-tight mt-3">
-              Curated Spaces for <em className="italic text-forest">Somatic Rest</em>
+            <h2 className="font-serif text-5xl md:text-8xl font-black text-charcoal tracking-tight leading-[1.05] text-center">
+              Editions.
             </h2>
+            <div className="w-20 h-0.5 bg-clay my-6 mx-auto" />
           </div>
 
           {/* Retreat Cards Grid */}
           <div className="grid gap-8 md:grid-cols-3 relative z-10">
             {list.map((e, idx) => (
               <Reveal key={idx} delay={idx * 0.15}>
-                <div className="group bg-white/75 backdrop-blur-sm border border-white/40 hover:border-clay/20 p-4 rounded-3xl shadow-capsule hover:shadow-luxury transition-all duration-500 hover:-translate-y-1">
+                <div className="group bg-offwhite border border-charcoal/10 hover:border-clay/30 p-4 rounded-sm shadow-sm hover:shadow-luxury transition-all duration-500 hover:-translate-y-1 text-charcoal">
                   {/* Landscape Image with float badges */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl shadow-sm bg-charcoal/5">
+                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-sm border border-charcoal/10 shadow-sm bg-charcoal/5">
                     <img
                       src={e.img}
                       alt={e.loc}
@@ -1601,7 +1759,7 @@ function Editions({ onApply }: { onApply: () => void }) {
                     </span>
 
                     {/* Floating spot badge */}
-                    <span className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md text-charcoal text-[9px] font-semibold tracking-wider px-3 py-1 rounded-full border border-charcoal/5">
+                    <span className="absolute bottom-4 right-4 bg-charcoal/85 backdrop-blur-md text-offwhite border border-white/10 text-[9px] font-semibold tracking-wider px-3 py-1 rounded-full">
                       {e.spots}
                     </span>
                   </div>
@@ -1609,7 +1767,7 @@ function Editions({ onApply }: { onApply: () => void }) {
                   {/* Content below image */}
                   <div className="pt-5 px-1 pb-2 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="eyebrow text-[9px] text-charcoal/45 tracking-wider">
+                      <span className="eyebrow text-[9px] text-charcoal/50 tracking-wider">
                         {e.coords}
                       </span>
                       <span className="h-1.5 w-1.5 rounded-full bg-clay animate-pulse" />
@@ -1619,14 +1777,14 @@ function Editions({ onApply }: { onApply: () => void }) {
                       {e.loc}
                     </h3>
 
-                    <p className="text-xs text-charcoal/65 leading-relaxed font-light min-h-[48px]">
+                    <p className="text-xs text-charcoal/70 leading-relaxed font-light min-h-[48px]">
                       {e.desc}
                     </p>
 
                     <div className="pt-2">
                       <button
                         onClick={onApply}
-                        className="w-full py-2.5 rounded-xl border border-clay/20 group-hover:border-clay group-hover:bg-clay group-hover:text-white transition-all duration-500 eyebrow text-[9.5px] font-bold text-clay tracking-[0.2em] flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full py-2.5 rounded-sm border border-clay/20 group-hover:border-clay group-hover:bg-clay group-hover:text-white transition-all duration-500 eyebrow text-[9.5px] font-bold text-clay tracking-[0.2em] flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <span>Request Invite</span>
                         <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" />
@@ -1647,7 +1805,7 @@ function Editions({ onApply }: { onApply: () => void }) {
               className="w-full h-full"
               preserveAspectRatio="none"
             >
-              <path d="M0,20 C300,0 700,40 1000,20 L1000,40 L0,40 Z" fill="var(--forest)" />
+              <path d="M0,20 C300,0 700,40 1000,20 L1000,40 L0,40 Z" fill="var(--charcoal)" />
             </svg>
           </div>
         </div>
@@ -1661,10 +1819,10 @@ function FinalCTA({ onApply }: { onApply: () => void }) {
   return (
     <section
       id="apply"
-      className="scroll-mt-32 relative overflow-hidden bg-charcoal py-40 text-offwhite grain md:py-52"
+      className="scroll-mt-32 relative overflow-hidden bg-charcoal py-24 text-cream grain md:py-32"
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-t from-forest/30 via-charcoal/95 to-charcoal" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-charcoal/30 to-charcoal/10" />
         {Array.from({ length: 40 }).map((_, i) => (
           <motion.span
             key={i}
@@ -1706,13 +1864,13 @@ function FinalCTA({ onApply }: { onApply: () => void }) {
           </span>
         </h2>
         <Reveal delay={0.4}>
-          <p className="mx-auto mt-8 max-w-lg text-base leading-relaxed text-offwhite/60 font-light">
+          <p className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-offwhite/70 font-light">
             Twelve seats. A short application. A real conversation before you say yes. No mass
             intake. No upsell. Just a careful door, opened on purpose.
           </p>
         </Reveal>
         <Reveal delay={0.6}>
-          <div className="mt-12 flex justify-center">
+          <div className="mt-8 flex justify-center">
             <MagneticButton onClick={onApply}>Take a Living Break</MagneticButton>
           </div>
         </Reveal>
@@ -1720,7 +1878,7 @@ function FinalCTA({ onApply }: { onApply: () => void }) {
           <motion.p
             animate={{ opacity: [0.5, 0.85, 0.5] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="mt-20 font-serif text-2xl italic text-clay-soft font-light tracking-wide font-serif"
+            className="mt-12 font-serif text-2xl italic text-clay-soft font-light tracking-wide font-serif"
           >
             Life is meant to be felt.
           </motion.p>
@@ -1730,84 +1888,228 @@ function FinalCTA({ onApply }: { onApply: () => void }) {
   );
 }
 
-/* ───────────── FOOTER ───────────── */
-function Footer() {
+/* ───────────── FAQ ───────────── */
+function FAQ() {
+  const faqData = [
+    {
+      q: "Do I need experience?",
+      a: "No.",
+    },
+    {
+      q: "How is this different from other programmes?",
+      a: "Most programmes work through your mind — more thinking, more frameworks, more strategy. A Living Break works through your body, your creativity, and your emotions first.",
+    },
+    {
+      q: "Is this spiritual?",
+      a: "No guru, no doctrine. Just real human work.",
+    },
+    {
+      q: "What's the investment?",
+      a: "Starting at ₹48,000.",
+    },
+    {
+      q: "What if I don't know what I need?",
+      a: "That's the best reason to come.",
+    },
+    {
+      q: "What if I'm introverted?",
+      a: "That's welcome here. There's space for both connection and solitude — nothing is forced.",
+    },
+  ];
+
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const toggle = (idx: number) => {
+    setOpenIndex(openIndex === idx ? null : idx);
+  };
+
   return (
-    <footer className="bg-offwhite py-20 md:py-24 border-t border-hairline relative z-10">
-      <div className="mx-auto max-w-[1500px] px-6 md:px-12">
-        <div className="grid gap-12 md:grid-cols-[1.5fr_1fr_1fr_1.2fr]">
-          <div className="space-y-4">
-            <a href="#top" className="flex items-center text-charcoal">
-              <LogoMark className="text-charcoal" />
-            </a>
-            <p className="max-w-xs text-sm leading-relaxed text-charcoal/60 font-light">
-              India's Embodied Living Movement. Twelve people, five days, one quiet circle at a
-              time.
-            </p>
+    <section className="bg-cream text-charcoal py-24 md:py-32 border-t border-charcoal/5 relative z-10">
+      <div className="mx-auto max-w-[1300px] px-6 md:px-12">
+        <div className="grid gap-12 lg:grid-cols-[1fr_1.8fr]">
+          {/* Left Column: Heading */}
+          <div className="lg:sticky lg:top-40 h-fit space-y-4">
+            <Reveal>
+              <span className="eyebrow text-clay tracking-[0.24em] font-semibold text-xs uppercase mb-1 block">
+                FAQ
+              </span>
+              <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl font-black text-charcoal tracking-tight leading-[1.1]">
+                Questions people ask.
+              </h2>
+              <div className="w-20 h-0.5 bg-clay my-6" />
+            </Reveal>
           </div>
 
-          {[
-            [
-              "The Experience",
-              [
-                ["What it is", "#experience"],
-                ["The Method", "#experience"],
-                ["A Few Frames", "#experience"],
-              ],
-            ],
-            [
-              "Editions",
-              [
-                ["Goa · Aug 12", "#editions"],
-                ["Goa · Aug 26", "#editions"],
-                ["Himachal · Oct", "#editions"],
-              ],
-            ],
-            [
-              "About",
-              [
-                ["Aman", "#founder"],
-                ["Press", "#founder"],
-                ["Contact", "mailto:hello@lifemoves.in"],
-              ],
-            ],
-          ].map(([h, items]) => (
-            <div key={h as string} className="space-y-4">
-              <div className="eyebrow text-charcoal/40 text-[9px] font-semibold tracking-wider">
-                {h as string}
-              </div>
-              <ul className="space-y-2.5">
-                {(items as [string, string][]).map(([label, href]) => (
-                  <li key={label}>
-                    <a
-                      href={href}
-                      className="text-sm text-charcoal/70 transition hover:text-clay hover:pl-1 duration-300 inline-block font-light"
-                    >
-                      {label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-
+          {/* Right Column: Accordion */}
           <div className="space-y-4">
-            <div className="eyebrow text-charcoal/40 text-[9px] font-semibold tracking-wider">
-              Newsletter
+            {faqData.map((item, idx) => {
+              const isOpen = openIndex === idx;
+              return (
+                <Reveal key={idx} delay={idx * 0.05}>
+                  <div className="border-b border-charcoal/10 pb-4">
+                    <button
+                      onClick={() => toggle(idx)}
+                      className="w-full py-4 flex justify-between items-center text-left text-charcoal hover:text-clay transition-colors duration-300 focus:outline-none group cursor-pointer"
+                    >
+                      <span className="font-serif text-lg md:text-xl font-medium tracking-tight pr-4">
+                        {item.q}
+                      </span>
+                      <div className="relative w-5 h-5 flex-shrink-0 flex items-center justify-center">
+                        {/* Horizontal line */}
+                        <span className="absolute w-4 h-[1.5px] bg-charcoal/60 group-hover:bg-clay transition-colors duration-300" />
+                        {/* Vertical line (rotates/fades to open) */}
+                        <motion.span
+                          initial={{ rotate: 90 }}
+                          animate={{ rotate: isOpen ? 0 : 90, opacity: isOpen ? 0 : 1 }}
+                          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                          className="absolute w-[1.5px] h-4 bg-charcoal/60 group-hover:bg-clay transition-colors"
+                        />
+                      </div>
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <p className="pb-4 pt-1 text-sm md:text-base leading-relaxed text-charcoal/70 font-light max-w-2xl">
+                            {item.a}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </Reveal>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────────── FOOTER ───────────── */
+export function Footer({ onApply }: { onApply?: () => void }) {
+  return (
+    <footer className="bg-offwhite py-20 md:py-24 border-t border-hairline relative z-10 text-charcoal">
+      <div className="mx-auto max-w-[1300px] px-6 md:px-12">
+        <div className="grid gap-12 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+          {/* Column 1: Brand */}
+          <div className="space-y-4">
+            <a href="#top" className="flex items-center gap-2 text-charcoal">
+              <LogoMark className="text-charcoal" />
+              <span className="font-serif text-lg font-bold tracking-tight">Life Moves</span>
+            </a>
+            <div className="space-y-1">
+              <p className="max-w-xs text-sm leading-relaxed text-charcoal/80 font-medium">
+                India's Embodied Living Movement
+              </p>
+              <p className="max-w-xs text-xs leading-relaxed text-charcoal/50 font-light">
+                Twelve people, five days, one quiet circle.
+              </p>
             </div>
-            <p className="text-xs text-charcoal/55 leading-relaxed max-w-[260px] font-light">
-              Receive very occasional letters on slowing down and living on purpose.
-            </p>
-            <div className="relative max-w-[280px]">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full border-b border-charcoal/20 bg-transparent py-2 text-xs outline-none transition focus:border-clay pr-8 font-light text-charcoal"
-              />
-              <button className="absolute right-0 top-1/2 -translate-y-1/2 text-charcoal/30 hover:text-clay transition duration-300">
-                <Send className="h-3.5 w-3.5" />
-              </button>
+          </div>
+
+          {/* Column 2: Explore Links */}
+          <div className="space-y-4">
+            <div className="eyebrow text-charcoal/40 text-[9px] font-semibold tracking-wider uppercase">
+              Explore
             </div>
+            <ul className="space-y-2.5">
+              <li>
+                <Link
+                  to="/experience"
+                  className="text-sm text-charcoal/70 transition hover:text-clay hover:pl-1 duration-300 inline-block font-light"
+                >
+                  The Experience
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="/#editions"
+                  className="text-sm text-charcoal/70 transition hover:text-clay hover:pl-1 duration-300 inline-block font-light"
+                >
+                  Editions
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#apply"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onApply?.();
+                  }}
+                  className="text-sm text-charcoal/70 transition hover:text-clay hover:pl-1 duration-300 inline-block font-light cursor-pointer"
+                >
+                  Request Your Invite
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Legal Links */}
+          <div className="space-y-4">
+            <div className="eyebrow text-charcoal/40 text-[9px] font-semibold tracking-wider uppercase">
+              Legal
+            </div>
+            <ul className="space-y-2.5">
+              <li>
+                <a
+                  href="#privacy"
+                  className="text-sm text-charcoal/70 transition hover:text-clay hover:pl-1 duration-300 inline-block font-light"
+                >
+                  Privacy
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#terms"
+                  className="text-sm text-charcoal/70 transition hover:text-clay hover:pl-1 duration-300 inline-block font-light"
+                >
+                  Terms
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#refund"
+                  className="text-sm text-charcoal/70 transition hover:text-clay hover:pl-1 duration-300 inline-block font-light"
+                >
+                  Refund Policy
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Contact */}
+          <div className="space-y-4">
+            <div className="eyebrow text-charcoal/40 text-[9px] font-semibold tracking-wider uppercase">
+              Contact
+            </div>
+            <ul className="space-y-2.5">
+              <li>
+                <a
+                  href="mailto:info@lifemoves.in"
+                  className="text-sm text-charcoal/70 transition hover:text-clay hover:pl-1 duration-300 inline-block font-light"
+                >
+                  info@lifemoves.in
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-charcoal/70 transition hover:text-clay hover:pl-1 duration-300 inline-block font-light"
+                >
+                  WhatsApp
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -1815,13 +2117,13 @@ function Footer() {
 
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <div className="flex flex-wrap gap-x-8 gap-y-2 text-xs text-charcoal/50 uppercase tracking-widest font-medium">
-            <a href="mailto:hello@lifemoves.in" className="hover:text-clay transition duration-300">
-              hello@lifemoves.in
+            <a href="mailto:info@lifemoves.in" className="hover:text-clay transition duration-300">
+              info@lifemoves.in
             </a>
             <span>Goa · Himachal Pradesh · India</span>
           </div>
           <p className="font-serif text-xl italic text-clay font-light font-serif">
-            Life moves. Come move with it.
+            Life moves. A way to more Human Living.
           </p>
         </div>
       </div>

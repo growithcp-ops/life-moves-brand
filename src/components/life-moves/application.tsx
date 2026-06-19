@@ -5,7 +5,7 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 const editions = [
   { id: "goa-aug-12", label: "Goa · Aug 12 – 16", spots: 6, cap: 12 },
-  { id: "goa-aug-26", label: "Goa · Aug 26 – 30", spots: 9, cap: 12 },
+  { id: "goa-aug-26", label: "Goa · Aug 26 – 30", spots: 8, cap: 12 },
   { id: "himachal-oct", label: "Himachal · October (Waitlist)", spots: 0, cap: 12 },
   { id: "not-sure", label: "Not sure yet — keep me posted", spots: -1, cap: 0 },
 ];
@@ -15,7 +15,7 @@ export function ApplicationModal({ open, onClose }: { open: boolean; onClose: ()
   const [done, setDone] = useState(false);
   const [form, setForm] = useState<any>({
     edition: "goa-aug-12",
-    invest: "₹60,000 – ₹80,000",
+    invest: "₹48,000 – ₹65,000",
     tried: [] as string[],
   });
 
@@ -265,10 +265,10 @@ export function ApplicationModal({ open, onClose }: { open: boolean; onClose: ()
                             <PillGroup
                               label="Investment range"
                               options={[
-                                "₹40,000 – ₹60,000",
-                                "₹60,000 – ₹80,000",
-                                "₹80,000 – ₹1,00,000",
-                                "₹1,00,000+",
+                                "₹48,000 – ₹65,000",
+                                "₹65,000 – ₹85,000",
+                                "₹85,000 – ₹1,10,000",
+                                "₹1,10,000+",
                               ]}
                               value={form.invest}
                               onChange={(v) => update("invest", v)}

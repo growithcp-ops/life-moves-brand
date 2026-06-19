@@ -21,29 +21,29 @@
   --color-terracotta: var(--terracotta);
   --color-cream: var(--cream);
   --color-amber-gold: var(--amber-gold);
-  --font-serif: "EB Garamond", serif;
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --forest: oklch(0.24 0.04 150); /* Richer, deeper luxury forest moss */
-  --charcoal: oklch(0.12 0.008 240); /* Near-black obsidian */
-  --offwhite: oklch(0.98 0.008 85); /* Rich, luxurious warm ivory */
-  --parchment: oklch(0.95 0.015 85); /* Warm paper texture */
-  --clay: oklch(0.56 0.12 45); /* Raw Sienna terracotta */
-  --clay-soft: oklch(0.72 0.08 52); /* Soft clay rose */
-  --hairline: oklch(0.12 0.008 240 / 0.11); /* Ultra thin dividers */
+  --forest: #2D5A3D; /* Forest Green */
+  --charcoal: #1E1E1E; /* Charcoal */
+  --offwhite: #F7F4EF; /* Off White */
+  --parchment: #EDE8DF; /* Parchment */
+  --clay: #C4845A; /* Clay */
+  --clay-soft: #D9A27F; /* Softened Clay */
+  --hairline: rgba(30, 30, 30, 0.11); /* Ultra thin dividers based on charcoal */
   --background: var(--offwhite);
   --foreground: var(--charcoal);
-  --muted: oklch(0.93 0.01 85);
-  --muted-foreground: oklch(0.42 0.01 240);
+  --muted: #EDE8DF; /* Muted matches Parchment */
+  --muted-foreground: #707070;
 
   /* Accent Additions */
-  --sand: oklch(0.92 0.018 85);
-  --moss: oklch(0.36 0.05 145);
-  --terracotta: oklch(0.48 0.11 40);
-  --cream: oklch(0.99 0.005 85);
-  --amber-gold: oklch(0.72 0.09 72);
+  --sand: #F0ECE3;
+  --moss: #396647;
+  --terracotta: #9E5D34;
+  --cream: #FAF8F5;
+  --amber-gold: #D29C6C;
 }
 
 @layer base {
@@ -88,14 +88,27 @@
 
 @utility font-serif {
   font-family: var(--font-serif);
-  font-weight: 300;
+  font-weight: 700;
 }
 @utility eyebrow {
-  font-family: var(--font-sans);
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.24em;
+  font-family: var(--font-serif);
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 1.5px;
+    background-color: currentColor;
+    border-radius: 1px;
+    opacity: 0.8;
+  }
 }
 @utility hairline {
   height: 1px;
