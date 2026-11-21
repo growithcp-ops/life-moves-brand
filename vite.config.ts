@@ -6,6 +6,14 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+const allowedHosts = [
+  "velirahealth.in",
+  "www.velirahealth.in",
+  "velira.cyberpunk.co.in",
+  "localhost",
+  "127.0.0.1",
+];
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
@@ -17,13 +25,13 @@ export default defineConfig({
       host: "::",
       port: 6202,
       strictPort: true,
-      allowedHosts: ["velira.cyberpunk.co.in", "localhost", "127.0.0.1"],
+      allowedHosts,
     },
     preview: {
       host: "::",
       port: 6202,
       strictPort: true,
-      allowedHosts: ["velira.cyberpunk.co.in", "localhost", "127.0.0.1"],
+      allowedHosts,
     },
   },
 });
