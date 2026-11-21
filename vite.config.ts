@@ -12,4 +12,18 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    server: {
+      host: "::",
+      port: 6202,
+      strictPort: true,
+      allowedHosts: ["velira.cyberpunk.co.in", "localhost", "127.0.0.1"],
+    },
+    preview: {
+      host: "::",
+      port: 6202,
+      strictPort: true,
+      allowedHosts: ["velira.cyberpunk.co.in", "localhost", "127.0.0.1"],
+    },
+  },
 });

@@ -76,45 +76,52 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "LIFE MOVES — India's Embodied Living Movement" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: "Velira Health & Wellness — Care Shaped Around You" },
       {
         name: "description",
         content:
-          "A 5-day Living Break in Goa & the Himalayas for founders, executives and creatives ready to feel alive again.",
+          "Lifestyle modification, personalised yoga, diet therapy, and reset programs to rejuvenate and feel fresh from inside — care shaped around you.",
       },
-      { property: "og:title", content: "LIFE MOVES — India's Embodied Living Movement" },
+      { property: "og:title", content: "Velira Health & Wellness — Care Shaped Around You" },
       {
         property: "og:description",
         content:
-          "A 5-day Living Break in Goa & the Himalayas for founders, executives and creatives ready to feel alive again.",
+          "Wellness services like lifestyle modification, personalised yoga, diet therapy, and guided reset programs tailored around your life.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "LIFE MOVES — India's Embodied Living Movement" },
+      { name: "twitter:title", content: "Velira Health & Wellness — Care Shaped Around You" },
       {
         name: "twitter:description",
         content:
-          "A 5-day Living Break in Goa & the Himalayas for founders, executives and creatives ready to feel alive again.",
+          "Wellness services like lifestyle modification, personalised yoga, diet therapy, and guided reset programs tailored around your life.",
       },
       {
         property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2e3d969a-e40a-48af-9c91-f18405065cee/id-preview-a0228256--89ace47b-49e1-40da-80b3-0e466044cf3f.lovable.app-1781454611523.png",
+        content: "/velira-hero.jpg",
       },
       {
         name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2e3d969a-e40a-48af-9c91-f18405065cee/id-preview-a0228256--89ace47b-49e1-40da-80b3-0e466044cf3f.lovable.app-1781454611523.png",
+        content: "/velira-hero.jpg",
       },
     ],
     links: [
-      { rel: "stylesheet", href: appCss },
+      {
+        rel: "icon",
+        type: "image/jpeg",
+        href: "/d78ff232-1f84-4757-a9b7-98d9571875f6.jpg",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: "/d78ff232-1f84-4757-a9b7-98d9571875f6.jpg",
+      },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: appCss },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Syne:wght@700;800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap",
       },
     ],
   }),
@@ -133,6 +140,12 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){if(window.__veliraInquiryInit)return;window.__veliraInquiryInit=true;document.addEventListener("click",function(e){var t=e.target&&e.target.closest&&e.target.closest("[data-open-inquiry]");if(!t||window.__veliraHydrated)return;window.__veliraPendingInquiry=true;});})();',
+          }}
+        />
         <Scripts />
       </body>
     </html>

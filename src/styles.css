@@ -8,6 +8,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-forest: var(--forest);
+  --color-forest-deep: var(--forest-deep);
   --color-charcoal: var(--charcoal);
   --color-offwhite: var(--offwhite);
   --color-clay: var(--clay);
@@ -27,6 +28,7 @@
 
 :root {
   --forest: #2D5A3D; /* Forest Green */
+  --forest-deep: #1E3F2A; /* Deep Forest Green */
   --charcoal: #1E1E1E; /* Charcoal */
   --offwhite: #F7F4EF; /* Off White */
   --parchment: #EDE8DF; /* Parchment */
@@ -52,8 +54,14 @@
   }
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
     scrollbar-width: thin;
     scrollbar-color: var(--clay-soft) var(--offwhite);
+  }
+
+  a,
+  button {
+    touch-action: manipulation;
   }
 
   /* Custom Scrollbar for Webkit */
@@ -116,30 +124,24 @@
   opacity: 0.12;
 }
 @utility grain {
-  position: relative;
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.45 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.75'/></svg>");
-    opacity: 0.05;
-    pointer-events: none;
-    mix-blend-mode: overlay;
-    z-index: 1;
-  }
+  isolation: isolate;
+}
+@utility overflow-x-safe {
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 @utility glass {
-  background: rgba(247, 244, 239, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(247, 244, 239, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border: 1px solid rgba(18, 18, 18, 0.05);
 }
 
 @utility glass-dark {
-  background: rgba(18, 18, 18, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(18, 18, 18, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(247, 244, 239, 0.08);
 }
 
