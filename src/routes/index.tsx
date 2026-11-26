@@ -18,6 +18,7 @@ import {
 } from "@/components/life-moves/primitives";
 import { ApplicationModal } from "@/components/life-moves/application";
 import { useInquiryModal } from "@/hooks/use-inquiry-modal";
+import { useDesktopMotion } from "@/hooks/use-desktop-motion";
 import { Nav, Footer } from "@/components/velira/layout";
 
 export { Nav, Footer };
@@ -52,8 +53,8 @@ function Index() {
     <div className="min-h-screen bg-cream text-charcoal overflow-x-safe selection:bg-clay selection:text-offwhite font-sans">
       <Nav onApply={apply} />
 
-      {/* Botanical Watermark background */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.04] z-0">
+      {/* Botanical Watermark background (desktop only to keep mobile scroll fast) */}
+      <div className="hidden md:block fixed inset-0 pointer-events-none opacity-[0.04] z-0">
         <img
           src="/velira-botanical-bg.webp"
           alt="Velira botanical watermark"
@@ -118,6 +119,8 @@ function WavyDivider() {
 /* ───────────── HERO ───────────── */
 function Hero({ onApply }: { onApply: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
+  const enableParallax = useDesktopMotion();
+
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
 
   const yBg = useTransform(scrollYProgress, [0, 1], [0, 150]);
@@ -130,7 +133,10 @@ function Hero({ onApply }: { onApply: () => void }) {
       ref={ref}
       className="relative flex flex-col min-h-screen min-h-[100svh] w-full overflow-hidden bg-charcoal text-offwhite grain"
     >
-      <motion.div style={{ y: yBg }} className="absolute inset-0 scale-105 bg-charcoal">
+      <motion.div
+        style={enableParallax ? { y: yBg } : undefined}
+        className="absolute inset-0 md:scale-105 bg-charcoal"
+      >
         <img
           src={heroImg}
           alt="Velira Health & Wellness Sanctuary"
@@ -142,7 +148,7 @@ function Hero({ onApply }: { onApply: () => void }) {
       </motion.div>
 
       <motion.div
-        style={{ opacity, y: yText }}
+        style={enableParallax ? { opacity, y: yText } : undefined}
         className="relative z-10 mx-auto flex flex-1 w-full max-w-[1500px] flex-col justify-between px-5 sm:px-6 pt-28 pb-20 sm:pt-32 sm:pb-24 md:px-12 md:pt-40 md:pb-32"
       >
         <div className="max-w-[1280px] my-auto">
@@ -156,26 +162,60 @@ function Hero({ onApply }: { onApply: () => void }) {
             </span>
           </h1>
 
-          <p className="mt-6 sm:mt-8 max-w-[600px] text-sm sm:text-base leading-relaxed text-offwhite/80 md:text-lg font-light">
-            We specialize in wellness services like lifestyle modification, personalised yoga and
-            diet therapy, reset programs to rejuvenate and feel good from inside — with{" "}
-            <span className="font-medium text-clay-soft underline decoration-clay-soft/50 underline-offset-4">
-              naturopathy and yoga doctors
-            </span>{" "}
-            guiding you — engineered for quality, reliability, and measurable success.
-          </p>
+          <div className="mt-6 sm:mt-8">
+            <p className="max-w-[600px] text-sm sm:text-base leading-relaxed text-offwhite/80 md:text-lg font-light">
+              We specialize in wellness services like lifestyle modification, personalised yoga and
+              diet therapy, reset programs to rejuvenate and feel good from inside — with{" "}
+              <span className="font-medium text-clay-soft underline decoration-clay-soft/50 underline-offset-4">
+                naturopathy and yoga doctors
+              </span>{" "}
+              guiding you — engineered for quality, reliability, and measurable success.
+            </p>
 
-          <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-5 sm:gap-8">
-            <MagneticButton data-open-inquiry="true" onClick={onApply}>
-              Step into Velira
-            </MagneticButton>
-            <Link
-              to="/experience"
-              className="flex items-center gap-3 text-offwhite/70 hover:text-clay-soft transition-colors"
-            >
-              <span className="h-px w-8 bg-current opacity-40" />
-              <span className="eyebrow text-[9.5px]">Explore Services &amp; Reset Journey</span>
-            </Link>
+            <div className="mt-8 sm:mt-10 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-5 sm:gap-x-6 md:flex md:items-center md:gap-8">
+              <div className="justify-self-start md:order-1">
+                <MagneticButton data-open-inquiry="true" onClick={onApply}>
+                  Step into Velira
+                </MagneticButton>
+              </div>
+
+              {/* Rotating Circular Text Badge */}
+              <div className="pointer-events-none flex-shrink-0 justify-self-start md:order-3 md:ml-auto">
+                <div className="relative h-[74px] w-[74px] sm:h-24 sm:w-24 md:h-32 md:w-32 lg:h-36 lg:w-36 flex items-center justify-center">
+                  <svg
+                    className="absolute h-full w-full text-offwhite/45 animate-[spin_25s_linear_infinite]"
+                    viewBox="0 0 100 100"
+                  >
+                    <path
+                      id="circlePath"
+                      d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"
+                      fill="none"
+                    />
+                    <text className="font-sans text-[7.8px] uppercase tracking-[0.36em] fill-current font-semibold">
+                      <textPath href="#circlePath" startOffset="0%">
+                        VELIRA CARE SHAPED AROUND YOU ·
+                      </textPath>
+                    </text>
+                  </svg>
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="font-serif text-xl sm:text-2xl md:text-4xl text-clay font-medium">
+                      4
+                    </span>
+                    <span className="text-[6px] sm:text-[7px] md:text-[7.5px] uppercase tracking-widest text-offwhite/55">
+                      Pillars
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <Link
+                to="/experience"
+                className="col-span-2 justify-self-start md:order-2 flex items-center gap-3 text-offwhite/70 hover:text-clay-soft transition-colors"
+              >
+                <span className="h-px w-8 bg-current opacity-40" />
+                <span className="eyebrow text-[9.5px]">Explore Services &amp; Reset Journey</span>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -190,33 +230,6 @@ function Hero({ onApply }: { onApply: () => void }) {
           <div className="eyebrow text-[9.5px] opacity-55">1-on-1 Guided Wellness · India</div>
         </div>
       </motion.div>
-
-      {/* Floating SVG Rotating Circular Text Badge */}
-      <div className="pointer-events-none hidden sm:block absolute right-6 top-24 z-10 md:right-16 md:top-32">
-        <div className="relative h-28 w-28 md:h-36 md:w-36 flex items-center justify-center">
-          <svg
-            className="absolute h-full w-full text-offwhite/30 animate-[spin_25s_linear_infinite]"
-            viewBox="0 0 100 100"
-          >
-            <path
-              id="circlePath"
-              d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"
-              fill="none"
-            />
-            <text className="font-sans text-[8.5px] uppercase tracking-[0.41em] fill-current font-semibold">
-              <textPath href="#circlePath" startOffset="0%">
-                VELIRA - CARE SHAPED AROUND ·
-              </textPath>
-            </text>
-          </svg>
-          <div className="flex flex-col items-center justify-center">
-            <span className="font-serif text-3xl md:text-4xl text-clay font-medium">4</span>
-            <span className="text-[7.5px] uppercase tracking-widest text-offwhite/55">
-              Pillars
-            </span>
-          </div>
-        </div>
-      </div>
 
       <WavyDivider />
     </section>
@@ -847,19 +860,19 @@ function Outcome() {
           <div className="w-full">
             <div className="bg-cream/95 rounded-2xl border border-charcoal/10 shadow-2xl overflow-hidden grid md:grid-cols-[1.1fr_1.4fr] items-stretch min-h-[420px] md:min-h-[460px] relative group">
               <div className="relative h-64 md:h-auto overflow-hidden bg-charcoal/5">
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={activeIndex}
-                    initial={{ opacity: 0, scale: 1.03 }}
+                    initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.4, ease }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25, ease }}
                     className="absolute inset-0 w-full h-full"
                   >
                     <img
                       src={outcomes[activeIndex].image}
                       alt={outcomes[activeIndex].title}
-                      loading="lazy"
+                      loading="eager"
                       decoding="async"
                       className="w-full h-full object-cover"
                     />
@@ -867,7 +880,7 @@ function Outcome() {
                   </motion.div>
                 </AnimatePresence>
 
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={activeIndex}
                     initial={{ opacity: 0, y: 10 }}
@@ -896,7 +909,7 @@ function Outcome() {
                     </span>
                   </div>
 
-                  <AnimatePresence mode="wait">
+                  <AnimatePresence mode="wait" initial={false}>
                     <motion.div
                       key={activeIndex}
                       initial={{ opacity: 0, y: 15 }}
@@ -1193,15 +1206,9 @@ function FinalCTA({ onApply }: { onApply: () => void }) {
         <h2 className="font-serif text-[clamp(2.4rem,6vw,5.5rem)] leading-[1.18] tracking-normal">
           <StaggerWords text="Care shaped around you," className="block text-white" />
           <span className="block overflow-hidden py-1">
-            <motion.span
-              initial={{ y: "100%", rotate: 1 }}
-              whileInView={{ y: 0, rotate: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.15, ease }}
-              className="inline-block italic text-offwhite/55 font-light font-serif"
-            >
+            <span className="inline-block italic text-offwhite/55 font-light font-serif">
               ready to rejuvenate from inside.
-            </motion.span>
+            </span>
           </span>
         </h2>
         <Reveal delay={0.15}>

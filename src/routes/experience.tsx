@@ -12,6 +12,7 @@ import { Nav, Footer } from "@/components/velira/layout";
 import { ApplicationModal } from "@/components/life-moves/application";
 import { useInquiryModal } from "@/hooks/use-inquiry-modal";
 import { Reveal, MagneticButton } from "@/components/life-moves/primitives";
+import { useDesktopMotion } from "@/hooks/use-desktop-motion";
 
 export const Route = createFileRoute("/experience")({
   head: () => ({
@@ -105,8 +106,8 @@ function ExperiencePage() {
     <div className="min-h-screen bg-cream text-charcoal overflow-x-safe selection:bg-clay selection:text-offwhite font-sans">
       <Nav onApply={apply} alwaysSolid={true} />
 
-      {/* Botanical Watermark background */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.04] z-0">
+      {/* Botanical Watermark background (desktop only to keep mobile scroll fast) */}
+      <div className="hidden md:block fixed inset-0 pointer-events-none opacity-[0.04] z-0">
         <img
           src="/velira-botanical-bg.webp"
           alt="Velira botanical watermark"
@@ -202,6 +203,7 @@ function StageSection({
   idx: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const enableDesktopScroll = useDesktopMotion();
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -219,23 +221,25 @@ function StageSection({
     <div
       ref={containerRef}
       id={stage.id}
-      className="relative min-h-[115vh] md:h-[135vh] bg-transparent"
+      className="relative md:h-[135vh] bg-transparent"
     >
-      <div className="sticky top-0 min-h-screen md:h-screen w-full overflow-hidden flex items-center justify-center py-24 md:py-0">
+      <div className="md:sticky md:top-0 md:h-screen w-full overflow-hidden flex items-center justify-center py-16 sm:py-20 md:py-0">
         <div className="absolute inset-0 w-full h-full pointer-events-none">
           <motion.img
-            style={{ scale: imgScale, opacity: imgOpacity }}
+            style={enableDesktopScroll ? { scale: imgScale, opacity: imgOpacity } : undefined}
             src={stage.img}
             alt=""
             loading={idx === 0 ? "eager" : "lazy"}
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover filter brightness-[0.25]"
+            className="absolute inset-0 h-full w-full object-cover filter brightness-[0.25] opacity-85"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-transparent to-charcoal/70" />
         </div>
 
         <motion.div
-          style={{ opacity: cardOpacity, y: cardY, scale: cardScale }}
+          style={
+            enableDesktopScroll ? { opacity: cardOpacity, y: cardY, scale: cardScale } : undefined
+          }
           className="relative z-10 w-full max-w-6xl mx-auto px-6 lg:px-10 grid md:grid-cols-[1.2fr_1fr] gap-12 lg:gap-20 items-center text-cream"
         >
           <div className="space-y-6 text-left">

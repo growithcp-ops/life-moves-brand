@@ -71,7 +71,7 @@ export function Nav({
       <header
         className={`fixed top-0 left-0 right-0 z-50 w-full px-5 sm:px-6 py-4 sm:py-5 md:px-12 text-offwhite transition-colors duration-300 ${
           solid
-            ? "bg-charcoal/95 backdrop-blur-md border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.18)]"
+            ? "bg-charcoal/95 md:backdrop-blur-md border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.18)]"
             : "bg-transparent border-b border-transparent"
         }`}
       >

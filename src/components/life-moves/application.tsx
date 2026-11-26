@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { VeliraLogoMark } from "@/components/velira/layout";
+import {
+  buildInquiryEmailLinks,
+  INQUIRY_RECIPIENT_EMAIL,
+  openInquiryComposer,
+} from "@/lib/inquiry-email";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -51,7 +56,7 @@ export function ApplicationModal({ open, onClose }: { open: boolean; onClose: ()
     timeline: "",
     services: [],
     program: "personalised-yoga",
-    channel: "Phone & WhatsApp (+91 81482 88704)",
+    channel: `Email (${INQUIRY_RECIPIENT_EMAIL})`,
   });
 
   const onCloseRef = useRef(onClose);
@@ -73,9 +78,31 @@ export function ApplicationModal({ open, onClose }: { open: boolean; onClose: ()
     };
   }, [open]);
 
+  const selectedProgramLabel =
+    programs.find((p) => p.id === form.program)?.label ?? "Wellness Consultation";
+
+  const emailLinks = buildInquiryEmailLinks({
+    subject: `Velira Wellness Inquiry — ${selectedProgramLabel}${form.name ? ` (${form.name})` : ""}`,
+    fields: [
+      ["Full Name", form.name],
+      ["Phone / WhatsApp", form.phone],
+      ["Email", form.email],
+      ["City", form.city],
+      ["Preferred Time", form.timing],
+      ["Primary Focus", form.focus],
+      ["Timeline", form.timeline],
+      ["Services Interested In", form.services.join(", ")],
+      ["Selected Program", selectedProgramLabel],
+      ["Preferred Response Channel", form.channel],
+    ],
+  });
+
   const next = () => setStep((s) => Math.min(2, s + 1));
   const back = () => setStep((s) => Math.max(0, s - 1));
-  const submit = () => setDone(true);
+  const submit = () => {
+    setDone(true);
+    openInquiryComposer(emailLinks);
+  };
 
   const update = (k: keyof typeof form, v: any) => setForm((f) => ({ ...f, [k]: v }));
   const toggleService = (v: string) =>
@@ -83,14 +110,6 @@ export function ApplicationModal({ open, onClose }: { open: boolean; onClose: ()
       ...f,
       services: f.services.includes(v) ? f.services.filter((x) => x !== v) : [...f.services, v],
     }));
-
-  const whatsappText = encodeURIComponent(
-    `Hello Velira Health & Wellness! I'd like to inquire about ${
-      programs.find((p) => p.id === form.program)?.label ?? "your wellness programs"
-    }.${form.name ? ` Name: ${form.name}.` : ""}${
-      form.services.length ? ` Interests: ${form.services.join(", ")}.` : ""
-    }`
-  );
 
   return (
     <AnimatePresence>
@@ -312,10 +331,7 @@ export function ApplicationModal({ open, onClose }: { open: boolean; onClose: ()
 
                             <PillGroup
                               label="Preferred way for us to respond"
-                              options={[
-                                "Phone & WhatsApp (+91 81482 88704)",
-                                "Email (velirahealth@gmail.com)",
-                              ]}
+                              options={[`Email (${INQUIRY_RECIPIENT_EMAIL})`]}
                               value={form.channel}
                               onChange={(v) => update("channel", v)}
                             />
@@ -406,23 +422,34 @@ export function ApplicationModal({ open, onClose }: { open: boolean; onClose: ()
                   />
                 </svg>
                 <h2 className="mt-8 sm:mt-10 font-serif text-3xl sm:text-5xl leading-tight">
-                  We&apos;ve got it. <br />
+                  Ready to send. <br />
                   <em className="italic text-clay-soft">Thank you.</em>
                 </h2>
                 <p className="mt-6 text-sm leading-relaxed text-offwhite/70">
-                  We read every inquiry personally. Someone from the Velira Health &amp; Wellness
-                  team will reach out within 24 hours — usually sooner.
+                  We&apos;ve opened a pre-filled email addressed to{" "}
+                  <span className="text-offwhite font-medium">{INQUIRY_RECIPIENT_EMAIL}</span>. Hit
+                  Send in Gmail to deliver your inquiry — our team will reply within 24 hours.
                 </p>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                   <a
-                    href={`https://wa.me/918148288704?text=${whatsappText}`}
+                    href={emailLinks.gmailUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-clay px-7 py-3.5 text-[10.5px] font-medium uppercase tracking-[0.22em] text-offwhite transition duration-300 hover:bg-offwhite hover:text-charcoal"
                   >
-                    Chat on WhatsApp
+                    Open in Gmail
                   </a>
-                  <button onClick={onClose} className="eyebrow px-4 py-3 text-clay-soft hover:text-clay">
+                  <a
+                    href={emailLinks.mailtoUrl}
+                    className="border border-offwhite/25 px-6 py-3.5 text-[10.5px] font-medium uppercase tracking-[0.2em] text-offwhite/85 transition duration-300 hover:border-clay hover:text-clay-soft"
+                  >
+                    Open Mail App
+                  </a>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="eyebrow px-4 py-3 text-clay-soft hover:text-clay cursor-pointer"
+                  >
                     ← Back to Velira
                   </button>
                 </div>

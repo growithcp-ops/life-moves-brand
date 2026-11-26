@@ -7,6 +7,11 @@ import { Nav, Footer } from "@/components/velira/layout";
 import { ApplicationModal } from "@/components/life-moves/application";
 import { useInquiryModal } from "@/hooks/use-inquiry-modal";
 import { Reveal, MagneticButton, ClipReveal } from "@/components/life-moves/primitives";
+import {
+  buildInquiryEmailLinks,
+  INQUIRY_RECIPIENT_EMAIL,
+  openInquiryComposer,
+} from "@/lib/inquiry-email";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -38,23 +43,29 @@ function ContactPage() {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  const emailLinks = buildInquiryEmailLinks({
+    subject: `Velira Inquiry — ${selectedService}${name ? ` (${name})` : ""}`,
+    fields: [
+      ["Service Interest", selectedService],
+      ["Full Name", name],
+      ["WhatsApp / Phone", phone],
+      ["Email Address", email],
+      ["Goals / Message", message],
+    ],
+  });
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    openInquiryComposer(emailLinks);
   };
-
-  const whatsappUrl = `https://wa.me/918148288704?text=${encodeURIComponent(
-    `Hello Velira Health & Wellness! I'd like to inquire about ${selectedService}.${
-      name ? ` Name: ${name}.` : ""
-    }${message ? ` Goals: ${message}` : ""}`
-  )}`;
 
   return (
     <div className="min-h-screen bg-cream text-charcoal overflow-x-safe selection:bg-clay selection:text-offwhite font-sans">
       <Nav onApply={() => setModalOpen(true)} alwaysSolid />
 
-      {/* Botanical Watermark */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.04] z-0">
+      {/* Botanical Watermark (desktop only to keep mobile scroll fast) */}
+      <div className="hidden md:block fixed inset-0 pointer-events-none opacity-[0.04] z-0">
         <img
           src="/velira-botanical-bg.webp"
           alt="Velira botanical watermark"
@@ -268,14 +279,6 @@ function ContactPage() {
 
                     <div className="flex flex-wrap items-center gap-6 pt-2">
                       <MagneticButton type="submit">Send Inquiry</MagneticButton>
-                      <a
-                        href={whatsappUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="eyebrow text-[10px] text-forest hover:text-clay transition"
-                      >
-                        Or message directly on WhatsApp →
-                      </a>
                     </div>
                   </form>
                 ) : (
@@ -287,17 +290,24 @@ function ContactPage() {
                       Thank you{name ? `, ${name}` : ""}.
                     </h2>
                     <p className="text-base text-charcoal/70 font-light max-w-md mx-auto leading-relaxed">
-                      Your inquiry regarding <strong>{selectedService}</strong> has been received.
-                      A Velira care guide will reach out promptly.
+                      Your pre-filled email regarding <strong>{selectedService}</strong> is ready
+                      for <strong>{INQUIRY_RECIPIENT_EMAIL}</strong>. Click Send in Gmail to
+                      deliver your inquiry.
                     </p>
                     <div className="flex flex-wrap justify-center gap-4 pt-4">
                       <a
-                        href={whatsappUrl}
+                        href={emailLinks.gmailUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-clay text-offwhite px-7 py-3.5 text-[10.5px] font-medium uppercase tracking-[0.2em] hover:bg-charcoal transition"
                       >
-                        Continue on WhatsApp
+                        Open in Gmail
+                      </a>
+                      <a
+                        href={emailLinks.mailtoUrl}
+                        className="border border-charcoal/20 text-charcoal px-6 py-3.5 text-[10.5px] font-medium uppercase tracking-[0.18em] hover:border-clay hover:text-clay transition"
+                      >
+                        Open Mail App
                       </a>
                       <button
                         type="button"
